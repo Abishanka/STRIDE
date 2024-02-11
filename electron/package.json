@@ -2,14 +2,15 @@
   "name": "electron",
   "version": "1.0.0",
   "description": "",
-  "main": "electron.js",
+  "main": "main.js",
   "scripts": {
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^28.2.1"
+    "electron": "^28.2.2"
   }
 }
