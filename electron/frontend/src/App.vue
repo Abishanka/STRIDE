@@ -11,10 +11,13 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   name: 'App'
-}
+  // If you have other options like 'data', 'methods', etc., they will go here.
+});
 </script>
 
 <style>
