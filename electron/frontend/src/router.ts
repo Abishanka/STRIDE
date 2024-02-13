@@ -5,9 +5,6 @@ const router = createRouter({
   history: createWebHistory(), // Use createWebHistory instead of mode: 'history'
   routes: [
     { path: '/', component: UserEntry },
-    // { path: '/page1', component: Page1 },
-    // { path: '/page2', component: Page2 },
-    // { path: '/page3', component: Page3 },
     { path: '/:catchAll(.*)', redirect: '/' },
   ]
 });
