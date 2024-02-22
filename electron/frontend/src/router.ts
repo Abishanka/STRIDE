@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import UserEntry from './components/UserEntry.vue';
+import HomeView from './components/HomeView.vue';
+import WaterFallView from './components/WaterFallView.vue';
 
 const router = createRouter({
   history: createWebHistory(), // Use createWebHistory instead of mode: 'history'
   routes: [
-    { path: '/', component: UserEntry },
+    { path: '/', component: HomeView },
+    {path: '/waterfall', component: WaterFallView},
     { path: '/:catchAll(.*)', redirect: '/' },
   ]
 });
