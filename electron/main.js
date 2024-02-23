@@ -72,6 +72,17 @@ function getCadetProfile(cadetId) {
 
 app.whenReady().then(createWindow);
 
+// Close the database connection
+app.on("before-quit", () => {
+  db.close((err) => {
+    if (err) {
+      console.error("Error closing database:", err.message);
+    } else {
+      console.log("Closed the SQLite database connection.");
+    }
+  });
+});
+
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
