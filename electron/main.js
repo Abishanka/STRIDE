@@ -70,6 +70,25 @@ function getCadetProfile(cadetId) {
   });
 }
 
+function updateCadetProfile(newValues, cadetId) {
+  const columnsToUpdate = Object.keys(newValues)
+    .map((column) => `${column} = ?`)
+    .join(", ");
+  const values = Object.values(newValues);
+
+  db.run(
+    `UPDATE CadetProfile SET ${columnsToUpdate} WHERE uid = ${cadetId}`,
+    values,
+    function (err) {
+      if (err) {
+        console.error("Error updating row:", err.message);
+      } else {
+        console.log(`Row updated: ${this.changes} row(s) affected`);
+      }
+    }
+  );
+}
+
 app.whenReady().then(createWindow);
 
 // Close the database connection
@@ -101,4 +120,9 @@ app.on("get-waterfall-data", () => {
 
 app.on("get-cadet-profile", (cadetId) => {
   getCadetProfile(cadetId);
+});
+
+//example use:  updateCadetProfile({ first_name: "newName", school: "newSchool" }, 2);
+app.on("edit-cadet-profile", (newValues, cadetId) => {
+  updateCadetProfile(newValues, cadetId);
 });
