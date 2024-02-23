@@ -1,31 +1,53 @@
 <template>
-      <!-- <div class="sidebar">
-      <router-link to="/page1">Page 1</router-link>
-      <router-link to="/page2">Page 2</router-link>
-      <router-link to="/page3">Page 3</router-link>
+  <div class="main-container dotted">
+    <div class="container-sm">
+      <div class="d-flex align-items-center">
+          <div class="logo">
+          <img src="../assets/images/logo.png" alt="Logo"> 
+          </div>
+          <div class="headername">STRIDE</div>
+      </div>
+
+      <div class="undername">Strategic Training and ROTC Information Data Entry</div>
+
+      <div class="container text-center">
+        <div class="row vertical-options">
+          <div class="col options" v-for="option in menuoptions" :key="option" :class="{'selected-option': option === selected_option}" @click="optionClick(option)">{{option}}</div>
+        </div>
+      </div>
+
+      <div class="admin-pwd">
+        <label for="password">Enter Admin Password</label>
+        <div class="input-group mb-3 input-group-lg w-50">
+          <input type="password" class="form-control admin-pwd-input" placeholder="Admin Password" name="password"  v-model="admn_pwd">
+          <div class="input-group-append">
+            <button class="btn btn-lg admin-pwd-btn" type="submit" @click="handleAdminPwdSubmit()">Button</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="login-form">
-      <h2>Login</h2>
-      <input type="text" placeholder="Login"/>
-      <input type="password" placeholder="Password"/>
-      <button>Login</button>
-    </div> -->
-  <div class="header">
-    <div class="logo"><img src="../assets/images/logo.png"></div>
-    <div class="name">STRIDE</div>
-    <div class="undername">Strategic Training and ROTC Information Data Entry</div>
-  </div>
-  <div class="verticaloptions">
-  </div>
-  <div class="password">
-    <div class="passwordinput"></div>
-    <div class="passwordsubmit"></div>
   </div>
 </template>
-  
+
 <script>
 export default {
-  name: 'HomeView'
+  name: 'HomeView',
+  data() {
+    return {
+      menuoptions: ['Waterfall', 'Blue Card', 'Analysis'],
+      selected_option: '',
+      admn_pwd: ''
+    }
+  },
+  methods: {
+    optionClick(option) {
+      this.selected_option = option;
+      console.log(this.selected_option);
+    },
+    handleAdminPwdSubmit() {
+      console.log(this.admn_pwd);
+    }
+  }
 }
 
 import '../assets/styles/HomeView.css';

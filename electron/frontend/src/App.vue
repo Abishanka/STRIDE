@@ -14,4 +14,5 @@ export default defineComponent({
 });
 
 import './assets/styles/app.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 </script>
