@@ -16,6 +16,8 @@
         </div>
       </div>
 
+      <a href="http://localhost:8080/waterfall">profile</a>
+
       <div class="admin-pwd">
         <label for="password">Enter Admin Password</label>
         <div class="input-group mb-3 input-group-lg w-50">
