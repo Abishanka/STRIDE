@@ -23,15 +23,7 @@ function createWindow() {
       nodeIntegration: true,
     },
   });
-  const blueCardData = {
-    cid: 1,
-    uid: 1,
-    event: "Event Name",
-    leadership_pos: "Leadership Position",
-    // Add other fields and values as needed
-  };
 
-  insertBlueCard(blueCardData);
   // Load the Vue app
   // If using Vue CLI 3/4, by default it will be served on localhost:8080
   win.loadURL("http://localhost:8080");
@@ -122,6 +114,23 @@ function insertBlueCard(blueCardData) {
   });
 }
 
+function insertCadetProfiles(cadetDataList) {
+  const placeholders = cadetDataList
+    .map(() => "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    .join(", ");
+  const values = cadetDataList.flatMap((cadet) => Object.values(cadet));
+
+  const sql = `INSERT INTO CadetProfile (uid, cadet, first_name, last_name, photo, gender, program, ms_level, ftx_co, school) VALUES ${placeholders}`;
+
+  db.run(sql, values, function (err) {
+    if (err) {
+      console.error("Error inserting rows:", err.message);
+    } else {
+      console.log(`${this.changes} row(s) inserted`);
+    }
+  });
+}
+
 app.whenReady().then(createWindow);
 
 // Close the database connection
@@ -175,4 +184,28 @@ insertBlueCard(blueCardData);
 */
 app.on("upload-blue-card", (blueCardInfo) => {
   insertBlueCard(blueCardInfo);
+});
+
+/*Example use:
+// Example usage:
+  const cadetDataList = [
+    {
+      uid: 4,
+      cadet: "Cadet 1",
+      first_name: "John",
+      last_name: "Doe",
+      photo: "",
+      gender: "Male",
+      program: "Program 1",
+      ms_level: "MS Level 1",
+      ftx_co: "FTX CO 1",
+      school: "School 2",
+    },
+    // Add more cadet data objects as needed
+  ];
+
+  insertCadetProfiles(cadetDataList);
+  */
+app.on("upload-cadet-profiles", (cadetData) => {
+  insertCadetProfiles(cadetData);
 });
