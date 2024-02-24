@@ -161,8 +161,8 @@ const blueCardData = {
   leadership_pos: 'Leadership Position',
   // Add other fields and values
 };
-*/
 insertBlueCard(blueCardData);
+*/
 app.on("upload-blue-card", (blueCardInfo) => {
   insertBlueCard(blueCardInfo);
 });
