@@ -9,12 +9,12 @@
             </div>
 
             <div class="container text-center sidebar-menu">
-                <div class="row sidebar-options" v-for="option in sidebaroptions" :key="option" @click="optionClick(option)">
+                <div class="row sidebar-options" v-for="option in sidebarOptions" :key="option" @click="optionClick(option)">
                     <div class="col options">{{option}}</div>
                 </div>
             </div>
 
-            <div class="container mt-auto position-absolute bottom-0 homebutton">
+            <div class="container mt-auto position-absolute bottom-0 homebutton" @click="goHome">
                 Return to Home
             </div>
         </div>
@@ -55,12 +55,21 @@
 
 
 <script>
+import { useRouter } from 'vue-router';
+
 export default {
     name: 'WaterFallView',
-    data() {
+    setup() {
+    const router = useRouter();
+
+    function goHome() {
+        router.push('/');
+    }
+
     return {
-      sidebaroptions: ['Waterfall', 'Cadet Profile', 'Export'],
-      waterfallCriteria: {
+        goHome,
+        sidebarOptions: ['Waterfall', 'Cadet Profile', 'Export'],
+        waterfallCriteria: {
         ftxLength: '',
         missionsPerDay: '',
         cadetsPerPlatoon: '',
