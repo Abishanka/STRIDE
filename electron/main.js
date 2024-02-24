@@ -23,7 +23,15 @@ function createWindow() {
       nodeIntegration: true,
     },
   });
+  const blueCardData = {
+    cid: 1,
+    uid: 1,
+    event: "Event Name",
+    leadership_pos: "Leadership Position",
+    // Add other fields and values as needed
+  };
 
+  insertBlueCard(blueCardData);
   // Load the Vue app
   // If using Vue CLI 3/4, by default it will be served on localhost:8080
   win.loadURL("http://localhost:8080");
@@ -89,6 +97,24 @@ function updateCadetProfile(newValues, cadetId) {
   );
 }
 
+function insertBlueCard(blueCardData) {
+  const columns = Object.keys(blueCardData).join(", ");
+  const placeholders = Object.keys(blueCardData)
+    .map(() => "?")
+    .join(", ");
+  const values = Object.values(blueCardData);
+
+  const sql = `INSERT INTO BlueCards (${columns}) VALUES (${placeholders})`;
+
+  db.run(sql, values, function (err) {
+    if (err) {
+      console.error("Error inserting row:", err.message);
+    } else {
+      console.log(`Row inserted with ID: ${this.lastID}`);
+    }
+  });
+}
+
 app.whenReady().then(createWindow);
 
 // Close the database connection
@@ -125,4 +151,18 @@ app.on("get-cadet-profile", (cadetId) => {
 //example use:  updateCadetProfile({ first_name: "newName", school: "newSchool" }, 2);
 app.on("edit-cadet-profile", (newValues, cadetId) => {
   updateCadetProfile(newValues, cadetId);
+});
+
+/*Example use:
+const blueCardData = {
+  cid: 1,
+  uid: 1,
+  event: 'Event Name',
+  leadership_pos: 'Leadership Position',
+  // Add other fields and values
+};
+*/
+insertBlueCard(blueCardData);
+app.on("upload-blue-card", (blueCardInfo) => {
+  insertBlueCard(blueCardInfo);
 });
