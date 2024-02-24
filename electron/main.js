@@ -37,7 +37,12 @@ function createWindow() {
   win.loadURL("http://localhost:8080");
 }
 
-function getWaterfallData() {
+function getWaterfallData(
+  ftx_length,
+  cadets_per_platoon,
+  missions_per_day,
+  cadets_per_squad
+) {
   //var to hold cadet info: uid, first_name, last_name, school
   let cadets;
 
@@ -62,6 +67,8 @@ function getWaterfallData() {
     .catch((err) => {
       console.error("Error:", err.message);
     });
+
+  //implement waterfall algo here w passed params
 }
 
 function getCadetProfile(cadetId) {
@@ -140,9 +147,12 @@ app.on("activate", () => {
   }
 });
 
-app.on("get-waterfall-data", () => {
-  getWaterfallData();
-});
+app.on(
+  "get-waterfall-data",
+  (ftx_length, cadets_per_platoon, missions_per_day, cadets_per_squad) => {
+    getWaterfallData();
+  }
+);
 
 app.on("get-cadet-profile", (cadetId) => {
   getCadetProfile(cadetId);
