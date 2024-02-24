@@ -16,14 +16,12 @@
         </div>
       </div>
 
-      <a href="http://localhost:8080/waterfall">profile</a>
-
       <div class="admin-pwd">
         <label for="password">Enter Admin Password</label>
         <div class="input-group mb-3 input-group-lg w-50">
           <input type="password" class="form-control admin-pwd-input" placeholder="Admin Password" name="password"  v-model="admn_pwd">
           <div class="input-group-append">
-            <button class="btn btn-lg admin-pwd-btn" type="submit" @click="handleAdminPwdSubmit()">Button</button>
+            <button class="btn btn-lg admin-pwd-btn" type="submit" @click="handleAdminPwdSubmit()">Abishanka →</button>
           </div>
         </div>
       </div>
@@ -48,6 +46,20 @@ export default {
     },
     handleAdminPwdSubmit() {
       console.log(this.admn_pwd);
+      // Navigate based on the selected_option
+      switch(this.selected_option) {
+        case 'Waterfall':
+          this.$router.push('/waterfall');
+          break;
+        case 'Blue Card':
+          this.$router.push('/bluecards'); // Ensure this matches the route path defined
+          break;
+        case 'Analysis':
+          this.$router.push('/analysis'); // Ensure this matches the route path defined
+          break;
+        default:
+          console.log('No option selected or option not recognized');
+      }
     }
   }
 }
