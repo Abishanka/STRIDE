@@ -1,29 +1,110 @@
 <template>
-    <div class="blue-cards-view">
-      <h1>Blue Cards</h1>
-      <p>This is the Blue Cards page. Content will be added here later.</p>
-      <img src="https://i.imgur.com/DivezgK.png" alt="Funny Image" class="funny-image">
+  <div class="main-container dotted">
+    <div class="sidebar container" style="margin-left: 0; margin-right: 0;">
+      <div class="d-flex align-items-center">
+        <div class="logo">
+          <img src="../assets/images/logo.png" alt="Logo">
+        </div>
+        <div class="headername">STRIDE</div>
+      </div>
+
+      <div class="container text-center sidebar-menu">
+        <div class="row sidebar-options" v-for="option in sidebarOptions" :key="option" @click="optionClick(option)">
+          <div class="col options">{{ option }}</div>
+        </div>
+      </div>
+
+      <div class="container mt-auto position-absolute bottom-0 homebutton" @click="goHome">
+        Return to Home
+      </div>
     </div>
-  </template>
+    <div class="content-container">
+      <div class="cadet-form">
+        <h1 class="cadet-form-heading">Cadet</h1>
+        <div class="form-row">
+          <label for="search-cadet" class="form-label">Search Cadet Name</label>
+          <input type="text" id="search-cadet" v-model="cadetName" placeholder=" ">
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="width: 15vw;">
+            <label for="cadet-id" class="form-label">Cadet Unique ID</label>
+            <input type="text" id="cadet-id" v-model="cadetId" placeholder=" ">
+          </div>
+          <div class="form-group" style="width: 40vw;">
+            <label for="school" class="form-label">School</label>
+            <input type="text" id="school" v-model="school" placeholder=" ">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first-name" class="form-label" style="width: 27.5vw;">First Name</label>
+            <input type="text" id="first-name" v-model="firstName" placeholder=" ">
+          </div>
+          <div class="form-group">
+            <label for="last-name" class="form-label" style="width: 27.5vw;">Last Name</label>
+            <input type="text" id="last-name" v-model="lastName" placeholder=" ">
+          </div>
+        </div>
+      </div>
+      <div class="bluecard-form">
+        <h1 class="bluecard-form-heading">Blue Card</h1>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cadet-id" class="form-label">Cadet Unique ID</label>
+            <input type="text" id="cadet-id" v-model="cadetId" placeholder=" ">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cadet-id" class="form-label">Cadet Unique ID</label>
+            <input type="text" id="cadet-id" v-model="cadetId" placeholder=" ">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cadet-id" class="form-label">Cadet Unique ID</label>
+            <input type="text" id="cadet-id" v-model="cadetId" placeholder=" ">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cadet-id" class="form-label">Cadet Unique ID</label>
+            <input type="text" id="cadet-id" v-model="cadetId" placeholder=" ">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cadet-id" class="form-label">Cadet Unique ID</label>
+            <input type="text" id="cadet-id" v-model="cadetId" placeholder=" ">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
   
-  <script>
-  export default {
-    name: 'BlueCardsView',
+<script>
+
+import { useRouter } from 'vue-router';
+
+export default {
+  name: 'BlueCardsView',
+  setup() {
+    const router = useRouter();
+    function goHome() {
+      router.push('/');
+    }
+    return {
+      goHome,
+      sidebarOptions: ['Blue Card', 'Cadet Profile', 'Export']
+    }
   }
-  </script>
+}
+
+import '../assets/styles/BlueCardsView.css';
+import '../assets/styles/Sidebar.css';
+
+</script>
   
-  <style scoped>
-  .blue-cards-view {
-    color: white; 
-    padding: 20px;
-    text-align: center;
-    background-color: #000;
-  }
-  
-  .funny-image {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-  }
-  </style>
+<style></style>
   

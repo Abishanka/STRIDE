@@ -1,0 +1,104 @@
+body {
+    background-color: #1E1E1E;
+    margin: 0;
+}
+
+.main-container {
+    width: 100vw;
+    height: 100vh;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 1.5vh;
+    height: 2vh;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    display: none;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #4D784E;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6EA171;
+  }
+
+.cadet-form {
+    position: relative;
+    width: 60vw;
+    padding-top: 2.5vh;
+    background-color: #1E1E1E;
+    padding: 3vh;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.cadet-form-heading {
+    font-family: sans-serif;
+    color: #6EA171;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 0;
+    margin-bottom: 3vh;
+}
+
+.form-row input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: none;
+    border-bottom: 1px solid #fff;
+    background-color: #1E1E1E;
+    color: #D2D1D1;
+}
+
+.form-row input:focus {
+    outline: none;
+    border-bottom: 1px solid #6EA171;
+}
+
+.form-label {
+    margin-bottom: 5px;
+    display: block;
+    text-align: left;
+    color: #D2D1D1;
+}
+
+.form-group {
+    margin: 0;
+}
+
+.bluecard-form {
+    position: relative;
+    width: 60vw;
+    padding-top: 2.5vh;
+    background-color: #1E1E1E;
+    padding: 3vh;
+    border-radius: 5px;
+    text-align: center;
+    border-color: #BBE0E3;
+    border-width: 1px;
+    color: #BBE0E3;
+}

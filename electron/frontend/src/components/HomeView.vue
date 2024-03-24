@@ -2,26 +2,28 @@
   <div class="main-container dotted">
     <div class="container-sm">
       <div class="d-flex align-items-center">
-          <div class="logo">
-          <img src="../assets/images/logo.png" alt="Logo"> 
-          </div>
-          <div class="headername">STRIDE</div>
+        <div class="logo">
+          <img src="../assets/images/logo.png" alt="Logo">
+        </div>
+        <div class="headername">STRIDE</div>
       </div>
 
       <div class="undername">Strategic Training and ROTC Information Data Entry</div>
 
       <div class="container text-center">
         <div class="row vertical-options">
-          <div class="col options" v-for="option in menuoptions" :key="option" :class="{'selected-option': option === selected_option}" @click="optionClick(option)">{{option}}</div>
+          <div class="col options" v-for="option in menuoptions" :key="option"
+            :class="{ 'selected-option': option === selected_option }" @click="optionClick(option)">{{ option }}</div>
         </div>
       </div>
 
       <div class="admin-pwd">
         <label for="password">Enter Admin Password</label>
         <div class="input-group mb-3 input-group-lg w-50">
-          <input type="password" class="form-control admin-pwd-input" placeholder="Admin Password" name="password"  v-model="admn_pwd">
+          <input type="password" class="form-control admin-pwd-input" placeholder="Admin Password" name="password"
+            v-model="admn_pwd">
           <div class="input-group-append">
-            <button class="btn btn-lg admin-pwd-btn" type="submit" @click="handleAdminPwdSubmit()">Abishanka →</button>
+            <button class="btn btn-lg admin-pwd-btn" type="submit" @click="handleAdminPwdSubmit()">Submit →</button>
           </div>
         </div>
       </div>
@@ -47,7 +49,7 @@ export default {
     handleAdminPwdSubmit() {
       console.log(this.admn_pwd);
       // Navigate based on the selected_option
-      switch(this.selected_option) {
+      switch (this.selected_option) {
         case 'Waterfall':
           this.$router.push('/waterfall');
           break;
@@ -67,6 +69,4 @@ export default {
 import '../assets/styles/HomeView.css';
 </script>
 
-<style scoped>
-/* Add any page-specific styles here */
-</style>
+<style scoped>/* Add any page-specific styles here */</style>
