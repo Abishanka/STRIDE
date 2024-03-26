@@ -29,6 +29,187 @@ function createWindow() {
   win.loadURL("http://localhost:8080");
 }
 
+function generate_platoons(cadets, cadets_per_platoon) {
+  numPlatoons = Math.ceil(cadets.length / cadets_per_platoon);
+  platoons = [];
+  for (let i = 0; i < numPlatoons; ++i) {
+    platoons.push([]);
+  }
+
+  let currentPlat = 0;
+  for (let i = 0; i < cadets.length; ++i) {
+    if (currentPlat == numPlatoons) {
+      currentPlat = 0;
+    }
+
+    platoons[currentPlat].push(cadets[i]);
+    currentPlat++;
+  }
+
+  return platoons;
+}
+
+function generateSquads(platoons, cadets_per_squad) {
+  let platoonsWithSquads = [];
+
+  for (let i = 0; i < platoons.length; ++i) {
+    numSquads = Math.ceil(platoons[i].length / cadets_per_squad);
+    squads = [];
+    for (let j = 0; j < numSquads; ++j) {
+      squads.push([]);
+    }
+
+    let currentSquad = 0;
+    for (let j = 0; j < platoons[i].length; ++j) {
+      if (currentSquad == numSquads) {
+        currentSquad = 0;
+      }
+
+      squads[currentSquad].push(platoons[i][j]);
+      currentSquad++;
+    }
+
+    platoonsWithSquads.push(squads);
+  }
+
+  return platoonsWithSquads;
+}
+
+function addLeadership(cadet, role, day, mission) {
+  if (cadet.hasOwnProperty("leadership")) {
+    cadet["leadership"].push({
+      type: role,
+      day: day,
+      mission: mission,
+    });
+  } else {
+    cadet["leadership"] = [
+      {
+        type: role,
+        day: day,
+        mission: mission,
+      },
+    ];
+  }
+  return cadet;
+}
+
+function tempprintwaterfall(jsonList) {
+  const formattedData = {};
+
+  // Process each JSON object
+  jsonList.forEach((item) => {
+    const { day, mission, position, cadet } = item;
+    const key = `Day ${day}: Mission ${mission}:`;
+
+    // Initialize the key in formattedData if not present
+    if (!formattedData[key]) {
+      formattedData[key] = { PL: [], PSG: [], SLs: [] };
+    }
+
+    // Append cadet information to the corresponding position list
+    if (position === "PL") {
+      formattedData[key]["PL"].push(cadet);
+    } else if (position === "PSG") {
+      formattedData[key]["PSG"].push(cadet);
+    } else if (position === "SL") {
+      formattedData[key]["SLs"].push(cadet);
+    }
+  });
+
+  // Print the formatted data
+  for (const key in formattedData) {
+    console.log(key);
+    const value = formattedData[key];
+    for (const position in value) {
+      console.log(`    ${position}: ${value[position].join(", ")}`);
+    }
+  }
+}
+
+function generateWaterfallData(
+  ftx_length,
+  cadets_per_platoon,
+  missions_per_day,
+  cadets_per_squad,
+  cadets
+) {
+  const platoons = generate_platoons(cadets, cadets_per_platoon);
+  const platoonsWithSquads = generateSquads(platoons, cadets_per_squad);
+
+  let leadership = [];
+
+  for (p = 0; p < platoons.length; ++p) {
+    let PLs = [];
+    let PSGs = [];
+    let SLs = [];
+
+    for (let day = 0; day < ftx_length; ++day) {
+      for (mission = 0; mission < missions_per_day; ++mission) {
+        let currentSLs = [];
+        for (squad = 0; squad < platoonsWithSquads[p].length; ++squad) {
+          let cadetIndex = 0;
+          while (SLs.includes(platoonsWithSquads[p][squad][cadetIndex].uid)) {
+            ++cadetIndex;
+            if (cadetIndex >= platoonsWithSquads[p][squad].length) {
+              cadetIndex = Math.floor(
+                Math.random() * platoonsWithSquads[p][squad].length
+              );
+              break;
+            }
+          }
+          currentSL = platoonsWithSquads[p][squad][cadetIndex];
+          SLs.push(currentSL.uid);
+          currentSLs.push(currentSL.uid);
+          //add squad leader position
+          leadership.push({
+            cadet: currentSL.uid,
+            position: "SL",
+            day: day,
+            mission: mission,
+          });
+        }
+        //Select PL
+        cadetIndex = 0;
+        while (
+          currentSLs.includes(platoons[p][cadetIndex].uid) ||
+          PLs.includes(platoons[p][cadetIndex].uid)
+        ) {
+          ++cadetIndex;
+        }
+        currentPL = platoons[p][cadetIndex];
+        PLs.push(currentPL.uid);
+        //add PL
+        leadership.push({
+          cadet: currentPL.uid,
+          position: "PL",
+          day: day,
+          mission: mission,
+        });
+        //Select PSG
+        cadetIndex = 0;
+        while (
+          currentSLs.includes(platoons[p][cadetIndex].uid) ||
+          PSGs.includes(platoons[p][cadetIndex].uid) ||
+          currentPL.uid == platoons[p][cadetIndex].uid
+        ) {
+          ++cadetIndex;
+        }
+        currentPSG = platoons[p][cadetIndex];
+        PSGs.push(currentPSG.uid);
+        //add PSG
+        leadership.push({
+          cadet: currentPSG.uid,
+          position: "PSG",
+          day: day,
+          mission: mission,
+        });
+      }
+    }
+  }
+  tempprintwaterfall(leadership);
+}
+
 function getWaterfallData(
   ftx_length,
   cadets_per_platoon,
@@ -54,13 +235,18 @@ function getWaterfallData(
   Promise.all([getCadetData])
     .then(([cadetRows]) => {
       cadets = cadetRows;
-      console.log("Waterfall Data:", cadets);
+      //console.log("Waterfall Data:", cadets);
+      generateWaterfallData(
+        ftx_length,
+        cadets_per_platoon,
+        missions_per_day,
+        cadets_per_squad,
+        cadets
+      );
     })
     .catch((err) => {
       console.error("Error:", err.message);
     });
-
-  //implement waterfall algo here w passed params
 }
 
 function getCadetProfile(cadetId) {
@@ -159,7 +345,12 @@ app.on("activate", () => {
 app.on(
   "get-waterfall-data",
   (ftx_length, cadets_per_platoon, missions_per_day, cadets_per_squad) => {
-    getWaterfallData();
+    getWaterfallData(
+      ftx_length,
+      cadets_per_platoon,
+      missions_per_day,
+      cadets_per_squad
+    );
   }
 );
 
@@ -187,7 +378,6 @@ app.on("upload-blue-card", (blueCardInfo) => {
 });
 
 /*Example use:
-// Example usage:
   const cadetDataList = [
     {
       uid: 4,
