@@ -76,11 +76,17 @@ export default {
         cadetsPerSquad: '',
       },
     }
+  },  mounted() {
+    // Receive data from the main process
+    window.ipcRenderer.receive('receive-waterfall-data', (event, data) => {
+      console.log(data);
+    });
   },
   methods: {
     generateWaterfall() {
       // Logic for generating the waterfall here
       console.log('Generating waterfall with criteria:', this.waterfallCriteria);
+      window.ipcRenderer.send("get-waterfall-data", this.waterfallCriteria);
     },
   },
 }

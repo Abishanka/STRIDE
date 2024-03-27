@@ -1,5 +1,6 @@
-const { app, BrowserWindow } = require("electron");
+const { app, ipcMain, BrowserWindow } = require("electron");
 const sqlite3 = require("sqlite3");
+const path = require("node:path");
 
 const DB_PATH = "database/stride.db";
 
@@ -21,6 +22,8 @@ function createWindow() {
     height: 600,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, "frontend/src/preload.js"),
     },
   });
 
@@ -128,6 +131,7 @@ function tempprintwaterfall(jsonList) {
 }
 
 function generateWaterfallData(
+  event,
   ftx_length,
   cadets_per_platoon,
   missions_per_day,
@@ -207,10 +211,15 @@ function generateWaterfallData(
       }
     }
   }
-  tempprintwaterfall(leadership);
+  //tempprintwaterfall(leadership);
+  event.sender.send("receive-waterfall-data", {
+    platoons: platoonsWithSquads,
+    leadership: leadership,
+  });
 }
 
 function getWaterfallData(
+  event,
   ftx_length,
   cadets_per_platoon,
   missions_per_day,
@@ -218,7 +227,6 @@ function getWaterfallData(
 ) {
   //var to hold cadet info: uid, first_name, last_name, school
   let cadets;
-
   const getCadetData = new Promise((resolve, reject) => {
     db.all(
       "SELECT uid, first_name, last_name, school FROM CadetProfile ORDER BY school",
@@ -237,6 +245,7 @@ function getWaterfallData(
       cadets = cadetRows;
       //console.log("Waterfall Data:", cadets);
       generateWaterfallData(
+        event,
         ftx_length,
         cadets_per_platoon,
         missions_per_day,
@@ -342,17 +351,17 @@ app.on("activate", () => {
   }
 });
 
-app.on(
-  "get-waterfall-data",
-  (ftx_length, cadets_per_platoon, missions_per_day, cadets_per_squad) => {
-    getWaterfallData(
-      ftx_length,
-      cadets_per_platoon,
-      missions_per_day,
-      cadets_per_squad
-    );
-  }
-);
+ipcMain.on("get-waterfall-data", (event, args) => {
+  info = getWaterfallData(
+    event,
+    args.ftxLength,
+    args.cadetsPerPlatoon,
+    args.missionsPerDay,
+    args.cadetsPerSquad
+  );
+  //console.log(info);
+  //event.sender.send("receive-waterfall-data", info);
+});
 
 app.on("get-cadet-profile", (cadetId) => {
   getCadetProfile(cadetId);
