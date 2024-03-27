@@ -91,17 +91,23 @@ function generateWaterfallData(
 
   let leadership = [];
 
+  let duplicates = false;
   for (p = 0; p < platoons.length; ++p) {
     let PLs = [];
     let PSGs = [];
     let SLs = [];
 
+    let assigned = [];
     for (let day = 0; day < ftx_length; ++day) {
       for (mission = 0; mission < missions_per_day; ++mission) {
         let currentSLs = [];
         for (squad = 0; squad < platoonsWithSquads[p].length; ++squad) {
           let cadetIndex = 0;
-          while (SLs.includes(platoonsWithSquads[p][squad][cadetIndex].uid)) {
+          while (
+            SLs.includes(platoonsWithSquads[p][squad][cadetIndex].uid) ||
+            (!duplicates &&
+              assigned.includes(platoonsWithSquads[p][squad][cadetIndex].uid))
+          ) {
             ++cadetIndex;
             if (cadetIndex >= platoonsWithSquads[p][squad].length) {
               cadetIndex = Math.floor(
@@ -120,12 +126,16 @@ function generateWaterfallData(
             day: day,
             mission: mission,
           });
+          assigned.push(currentSL.uid);
         }
         //Select PL
         cadetIndex = 0;
         while (
           currentSLs.includes(platoons[p][cadetIndex].uid) ||
-          PLs.includes(platoons[p][cadetIndex].uid)
+          PLs.includes(
+            platoons[p][cadetIndex].uid ||
+              (!duplicates && assigned.includes(platoons[p][cadetIndex].uid))
+          )
         ) {
           ++cadetIndex;
           if (cadetIndex >= platoons[p].length) {
@@ -142,12 +152,14 @@ function generateWaterfallData(
           day: day,
           mission: mission,
         });
+        assigned.push(currentPL.uid);
         //Select PSG
         cadetIndex = 0;
         while (
           currentSLs.includes(platoons[p][cadetIndex].uid) ||
           PSGs.includes(platoons[p][cadetIndex].uid) ||
-          currentPL.uid == platoons[p][cadetIndex].uid
+          currentPL.uid == platoons[p][cadetIndex].uid ||
+          (!duplicates && assigned.includes(platoons[p][cadetIndex].uid))
         ) {
           ++cadetIndex;
           if (cadetIndex >= platoons[p].length) {
@@ -164,10 +176,15 @@ function generateWaterfallData(
           day: day,
           mission: mission,
         });
+        assigned.push(currentPSG.uid);
+
+        if (assigned.length == platoons[p].length) {
+          duplicates = true;
+        }
       }
     }
   }
-  //tempprintwaterfall(leadership);
+
   event.sender.send("receive-waterfall-data", {
     platoons: platoonsWithSquads,
     leadership: leadership,
