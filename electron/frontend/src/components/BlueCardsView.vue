@@ -23,7 +23,7 @@
         <h1 class="cadet-form-heading">Cadet</h1>
         <div class="form-row">
           <label for="search-cadet" class="form-label">Search Cadet Name</label>
-          <input type="text" id="search-cadet" v-model="cadetName" placeholder=" ">
+          <input type="text" id="search-cadet" v-model="searchText" @input="handleInputChange(searchText)" placeholder=" ">
         </div>
         <div class="form-row">
           <div class="form-group" style="width: 15vw;">
@@ -98,6 +98,15 @@ export default {
       goHome,
       sidebarOptions: ['Blue Card', 'Cadet Profile', 'Export']
     }
+  },mounted() {
+    window.ipcRenderer.receive('matching-cadets', (event, data) => {
+      console.log(data);
+    });
+  },
+  methods: {
+     handleInputChange(text) {
+        window.ipcRenderer.send("get-matching-cadets", text);
+     }
   }
 }
 

@@ -78,58 +78,6 @@ function generateSquads(platoons, cadets_per_squad) {
   return platoonsWithSquads;
 }
 
-function addLeadership(cadet, role, day, mission) {
-  if (cadet.hasOwnProperty("leadership")) {
-    cadet["leadership"].push({
-      type: role,
-      day: day,
-      mission: mission,
-    });
-  } else {
-    cadet["leadership"] = [
-      {
-        type: role,
-        day: day,
-        mission: mission,
-      },
-    ];
-  }
-  return cadet;
-}
-
-function tempprintwaterfall(jsonList) {
-  const formattedData = {};
-
-  // Process each JSON object
-  jsonList.forEach((item) => {
-    const { day, mission, position, cadet } = item;
-    const key = `Day ${day}: Mission ${mission}:`;
-
-    // Initialize the key in formattedData if not present
-    if (!formattedData[key]) {
-      formattedData[key] = { PL: [], PSG: [], SLs: [] };
-    }
-
-    // Append cadet information to the corresponding position list
-    if (position === "PL") {
-      formattedData[key]["PL"].push(cadet);
-    } else if (position === "PSG") {
-      formattedData[key]["PSG"].push(cadet);
-    } else if (position === "SL") {
-      formattedData[key]["SLs"].push(cadet);
-    }
-  });
-
-  // Print the formatted data
-  for (const key in formattedData) {
-    console.log(key);
-    const value = formattedData[key];
-    for (const position in value) {
-      console.log(`    ${position}: ${value[position].join(", ")}`);
-    }
-  }
-}
-
 function generateWaterfallData(
   event,
   ftx_length,
@@ -326,6 +274,21 @@ function insertCadetProfiles(cadetDataList) {
   });
 }
 
+function getMatchingCadets(event, name) {
+  console.log(name);
+  db.all(
+    "SELECT * FROM CadetProfile WHERE first_name || ' ' || last_name LIKE ? || '%'",
+    [name],
+    (err, rows) => {
+      if (err) {
+        console.error("Error selecting data:", err.message);
+      } else {
+        event.sender.send("matching-cadets", rows);
+      }
+    }
+  );
+}
+
 app.whenReady().then(createWindow);
 
 // Close the database connection
@@ -359,8 +322,6 @@ ipcMain.on("get-waterfall-data", (event, args) => {
     args.missionsPerDay,
     args.cadetsPerSquad
   );
-  //console.log(info);
-  //event.sender.send("receive-waterfall-data", info);
 });
 
 app.on("get-cadet-profile", (cadetId) => {
@@ -407,4 +368,8 @@ app.on("upload-blue-card", (blueCardInfo) => {
   */
 app.on("upload-cadet-profiles", (cadetData) => {
   insertCadetProfiles(cadetData);
+});
+
+ipcMain.on("get-matching-cadets", (event, args) => {
+  getMatchingCadets(event, args);
 });
