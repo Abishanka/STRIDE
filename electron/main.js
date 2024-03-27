@@ -338,7 +338,7 @@ ipcMain.on("get-waterfall-data", (event, args) => {
 
 ipcMain.on("get-cadet-profile", (event, args) => {
   cadetId = args; //update as needed based on what frontend sends
-  getCadetProfile(cadetId);
+  getCadetProfile(event, cadetId);
 });
 
 //example use:  updateCadetProfile({ first_name: "newName", school: "newSchool" }, 2);
