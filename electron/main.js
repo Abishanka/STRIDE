@@ -287,7 +287,6 @@ function insertCadetProfiles(event, cadetDataList) {
 }
 
 function getMatchingCadets(event, name) {
-  console.log(name);
   db.all(
     "SELECT * FROM CadetProfile WHERE first_name || ' ' || last_name LIKE ? || '%'",
     [name],

@@ -66,6 +66,115 @@ export default {
       router.push('/');
     }
 
+  //   function convertToCsv(data) {
+  //     const headers = ['School', 'Last Name', 'First Name', 'Platoon', 'Squad'];
+  //     let csvContent = headers.join(',') + '\n';
+  //     data.forEach((platoon, platoonIndex) => {
+  //       platoon.forEach((squad, squadIndex) => {
+  //         squad.forEach((cadet) => {
+  //           const name = `${cadet.last_name}, ${cadet.first_name}`;
+  //           const row = [cadet.school, name, platoonIndex + 1, squadIndex + 1].join(',');
+  //           csvContent += row + '\n';
+  //         });
+  //       });
+  //     });
+
+  //     console.log(csvContent);
+  //     downloadCsv(csvContent, "test.csv")
+  // }
+function convertToCsv(data, leadershipData) {
+    const headers = ['School', 'Last Name', 'First Name', 'Platoon', 'Squad'];
+    const missions = new Set();
+    leadershipData.forEach(leader => {
+        missions.add(`Day ${leader.day + 1} Mission ${leader.mission + 1}`);
+    });
+    const missionHeaders = Array.from(missions).sort(); // Sort the headers for consistency
+    headers.push(...missionHeaders);
+
+    const leadershipCountHeaders = ['Total SL', 'Total PL', 'Total PSG'];
+
+    let csvContent = headers.concat(leadershipCountHeaders).join(',') + '\n';
+
+    const cadetMap = new Map();
+    data.forEach((platoon, platoonIndex) => {
+        platoon.forEach((squad, squadIndex) => {
+            squad.forEach(cadet => {
+                cadetMap.set(cadet.uid, { ...cadet, platoon: platoonIndex + 1, squad: squadIndex + 1 });
+            });
+        });
+    });
+
+    const sortedPlatoons = [];
+    cadetMap.forEach(cadet => {
+        if (!sortedPlatoons[cadet.platoon]) {
+            sortedPlatoons[cadet.platoon] = [];
+        }
+        if (!sortedPlatoons[cadet.platoon][cadet.squad]) {
+            sortedPlatoons[cadet.platoon][cadet.squad] = [];
+        }
+        sortedPlatoons[cadet.platoon][cadet.squad].push(cadet);
+    });
+
+    sortedPlatoons.forEach(platoon => {
+        platoon.forEach(squad => {
+            let slCount = 0;
+            let plCount = 0;
+            let psgCount = 0;
+
+            squad.forEach(cadet => {
+                let row = [
+                    cadet.school,
+                    `${cadet.last_name}, ${cadet.first_name}`,
+                    cadet.platoon,
+                    cadet.squad
+                ];
+
+                missionHeaders.forEach(header => {
+                    const matchingLeader = leadershipData.find(leader => leader.cadet === cadet.uid && `Day ${leader.day + 1} Mission ${leader.mission + 1}` === header);
+                    if (matchingLeader) {
+                        row.push(matchingLeader.position);
+
+                        // Increment counts based on the position
+                        if (matchingLeader.position === 'SL') {
+                            slCount++;
+                        } else if (matchingLeader.position === 'PL') {
+                            plCount++;
+                        } else if (matchingLeader.position === 'PSG') {
+                            psgCount++;
+                        }
+                    } else {
+                        row.push('');
+                    }
+                });
+
+                // Add the counts to the row and reset them for the next leader
+                row = row.concat([slCount, plCount, psgCount]);
+                slCount = 0;
+                plCount = 0;
+                psgCount = 0;
+
+                csvContent += row.join(',') + '\n';
+            });
+        });
+    });
+
+    console.log(csvContent);
+   downloadCsv(csvContent, "test.csv");
+}
+
+
+
+
+    function downloadCsv(data, filename) {
+      const blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
     return {
       goHome,
       sidebarOptions: ['Waterfall', 'Cadet Profile', 'Export'],
@@ -75,11 +184,13 @@ export default {
         cadetsPerPlatoon: '',
         cadetsPerSquad: '',
       },
+      convertToCsv
     }
-  },  mounted() {
+  }, mounted() {
     // Receive data from the main process
     window.ipcRenderer.receive('receive-waterfall-data', (event, data) => {
       console.log(data);
+      this.convertToCsv(data.platoons, data.leadership);
     });
   },
   methods: {
@@ -88,7 +199,7 @@ export default {
       console.log('Generating waterfall with criteria:', this.waterfallCriteria);
       window.ipcRenderer.send("get-waterfall-data", this.waterfallCriteria);
     },
-  },
+  },  
 }
 
 import '../assets/styles/WaterFallView.css';
