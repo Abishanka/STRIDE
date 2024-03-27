@@ -228,7 +228,7 @@ function getCadetProfile(cadetId) {
   });
 }
 
-function updateCadetProfile(newValues, cadetId) {
+function updateCadetProfile(event, newValues, cadetId) {
   const columnsToUpdate = Object.keys(newValues)
     .map((column) => `${column} = ?`)
     .join(", ");
@@ -239,8 +239,10 @@ function updateCadetProfile(newValues, cadetId) {
     values,
     function (err) {
       if (err) {
+        event.sender.send("profile-update-status", err.message);
         console.error("Error updating row:", err.message);
       } else {
+        event.sender.send("profile-update-status", "success");
         console.log(`Row updated: ${this.changes} row(s) affected`);
       }
     }
@@ -341,8 +343,10 @@ app.on("get-cadet-profile", (cadetId) => {
 });
 
 //example use:  updateCadetProfile({ first_name: "newName", school: "newSchool" }, 2);
-app.on("edit-cadet-profile", (newValues, cadetId) => {
-  updateCadetProfile(newValues, cadetId);
+ipcMain.on("edit-cadet-profile", (event, args) => {
+  newValues = args.newValues; //update when frontend implemented to send
+  cadetId = args.id; //update when frontend implemented to send
+  updateCadetProfile(event, newValues, cadetId);
 });
 
 /*Example use:
