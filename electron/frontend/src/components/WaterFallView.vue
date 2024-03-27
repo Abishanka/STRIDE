@@ -158,12 +158,8 @@ function convertToCsv(data, leadershipData) {
         });
     });
 
-    console.log(csvContent);
-   downloadCsv(csvContent, "test.csv");
+   //downloadCsv(csvContent, "test.csv");
 }
-
-
-
 
     function downloadCsv(data, filename) {
       const blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
