@@ -214,16 +214,14 @@ function getWaterfallData(
     });
 }
 
-function getCadetProfile(cadetId) {
+function getCadetProfile(event, cadetId) {
   db.all("SELECT * FROM CadetProfile WHERE uid = ?", [cadetId], (err, rows) => {
     if (err) {
+      event.sender.send("receive-profile", err.message);
       console.error("Error selecting data:", err.message);
     } else {
-      if (rows.length > 0) {
-        console.log("Cadet data:", rows[0]);
-      } else {
-        console.log("Cadet with ID", cadetId, "not found.");
-      }
+      console.log("Cadet data:", rows);
+      event.sender.send("receive-profile", rows);
     }
   });
 }
@@ -338,7 +336,8 @@ ipcMain.on("get-waterfall-data", (event, args) => {
   );
 });
 
-app.on("get-cadet-profile", (cadetId) => {
+ipcMain.on("get-cadet-profile", (event, args) => {
+  cadetId = args; //update as needed based on what frontend sends
   getCadetProfile(cadetId);
 });
 
