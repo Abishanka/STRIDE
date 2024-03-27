@@ -267,18 +267,20 @@ function insertBlueCard(event, blueCardData) {
   });
 }
 
-function insertCadetProfiles(cadetDataList) {
+function insertCadetProfiles(event, cadetDataList) {
   const placeholders = cadetDataList
-    .map(() => "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    .map(() => "(?, ?, ?, ?, ?, ?, ?, ?, ?)")
     .join(", ");
   const values = cadetDataList.flatMap((cadet) => Object.values(cadet));
 
-  const sql = `INSERT INTO CadetProfile (uid, cadet, first_name, last_name, photo, gender, program, ms_level, ftx_co, school) VALUES ${placeholders}`;
+  const sql = `INSERT INTO CadetProfile (cadet, first_name, last_name, photo, gender, program, ms_level, ftx_co, school) VALUES ${placeholders}`;
 
   db.run(sql, values, function (err) {
     if (err) {
+      event.sender.send("cadet-upload-status", err.message);
       console.error("Error inserting rows:", err.message);
     } else {
+      event.sender.send("cadet-upload-status", "success");
       console.log(`${this.changes} row(s) inserted`);
     }
   });
@@ -379,8 +381,9 @@ ipcMain.on("upload-blue-card", (event, args) => {
 
   insertCadetProfiles(cadetDataList);
   */
-app.on("upload-cadet-profiles", (cadetData) => {
-  insertCadetProfiles(cadetData);
+ipcMain.on("upload-cadet-profiles", (event, args) => {
+  cadetData = args; //update as needed
+  insertCadetProfiles(event, cadetData);
 });
 
 ipcMain.on("get-matching-cadets", (event, args) => {
