@@ -66,22 +66,6 @@ export default {
       router.push('/');
     }
 
-  //   function convertToCsv(data) {
-  //     const headers = ['School', 'Last Name', 'First Name', 'Platoon', 'Squad'];
-  //     let csvContent = headers.join(',') + '\n';
-  //     data.forEach((platoon, platoonIndex) => {
-  //       platoon.forEach((squad, squadIndex) => {
-  //         squad.forEach((cadet) => {
-  //           const name = `${cadet.last_name}, ${cadet.first_name}`;
-  //           const row = [cadet.school, name, platoonIndex + 1, squadIndex + 1].join(',');
-  //           csvContent += row + '\n';
-  //         });
-  //       });
-  //     });
-
-  //     console.log(csvContent);
-  //     downloadCsv(csvContent, "test.csv")
-  // }
 function convertToCsv(data, leadershipData) {
     const headers = ['School', 'Last Name', 'First Name', 'Platoon', 'Squad'];
     const missions = new Set();
@@ -158,7 +142,7 @@ function convertToCsv(data, leadershipData) {
         });
     });
 
-   //downloadCsv(csvContent, "test.csv");
+   downloadCsv(csvContent, "test.csv");
 }
 
     function downloadCsv(data, filename) {
