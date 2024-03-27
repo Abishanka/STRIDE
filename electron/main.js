@@ -128,6 +128,10 @@ function generateWaterfallData(
           PLs.includes(platoons[p][cadetIndex].uid)
         ) {
           ++cadetIndex;
+          if (cadetIndex >= platoons[p].length) {
+            cadetIndex = Math.floor(Math.random() * platoons[p].length);
+            break;
+          }
         }
         currentPL = platoons[p][cadetIndex];
         PLs.push(currentPL.uid);
@@ -146,6 +150,10 @@ function generateWaterfallData(
           currentPL.uid == platoons[p][cadetIndex].uid
         ) {
           ++cadetIndex;
+          if (cadetIndex >= platoons[p].length) {
+            cadetIndex = Math.floor(Math.random() * platoons[p].length);
+            break;
+          }
         }
         currentPSG = platoons[p][cadetIndex];
         PSGs.push(currentPSG.uid);
@@ -239,7 +247,7 @@ function updateCadetProfile(newValues, cadetId) {
   );
 }
 
-function insertBlueCard(blueCardData) {
+function insertBlueCard(event, blueCardData) {
   const columns = Object.keys(blueCardData).join(", ");
   const placeholders = Object.keys(blueCardData)
     .map(() => "?")
@@ -250,8 +258,10 @@ function insertBlueCard(blueCardData) {
 
   db.run(sql, values, function (err) {
     if (err) {
+      event.sender.send("submission-status", err.message);
       console.error("Error inserting row:", err.message);
     } else {
+      event.sender.send("submission-status", "success");
       console.log(`Row inserted with ID: ${this.lastID}`);
     }
   });
@@ -343,8 +353,11 @@ const blueCardData = {
 };
 insertBlueCard(blueCardData);
 */
-app.on("upload-blue-card", (blueCardInfo) => {
-  insertBlueCard(blueCardInfo);
+ipcMain.on("upload-blue-card", (event, args) => {
+  const blueCardData = {
+    //set info from args
+  };
+  insertBlueCard(event, blueCardInfo);
 });
 
 /*Example use:

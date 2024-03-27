@@ -98,15 +98,21 @@ export default {
       goHome,
       sidebarOptions: ['Blue Card', 'Cadet Profile', 'Export']
     }
-  },mounted() {
+  }, mounted() {
     window.ipcRenderer.receive('matching-cadets', (event, data) => {
       console.log(data);
-    });
+    }),
+    window.ipcRenderer.receive('submission-status', (event, data) =>{
+      console.log(data);
+    })
   },
   methods: {
      handleInputChange(text) {
         window.ipcRenderer.send("get-matching-cadets", text);
-     }
+     },
+      submitBlueCard(info){
+        window.ipcRenderer.send("upload-blue-card", info);
+      }
   }
 }
 
