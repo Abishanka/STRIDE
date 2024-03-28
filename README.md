@@ -17,8 +17,8 @@ Install dependencies and run the development server by entering `npm install` fo
 
 After setting up the frontend, you have two options to run STRIDE:
 
-Electron Window
+#### Electron Window
 Open a new terminal window, navigate to the electron folder by entering `cd ../` (only if you're still in the frontend directory) followed by `cd ./electron/`, and start the Electron application by entering `npx electron .`. This will open STRIDE in an Electron window, providing a desktop application experience.
 
-Web Browser
+#### Web Browser
 Alternatively, you can access STRIDE through your web browser by navigating to `http://localhost:8080/`. This method allows you to run STRIDE without needing to open it as a desktop application.
