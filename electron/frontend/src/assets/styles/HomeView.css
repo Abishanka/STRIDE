@@ -80,6 +80,11 @@ body {
   width: 2vh;
 }
 
+.admin-pwd-input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 .admin-pwd .input-group input {
   border: 1px solid #4D784E;
 }

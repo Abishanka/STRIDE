@@ -166,13 +166,14 @@ function convertToCsv(data, leadershipData) {
       },
       convertToCsv
     }
-  }, mounted() {
-    // Receive data from the main process
-    window.ipcRenderer.receive('receive-waterfall-data', (event, data) => {
-      console.log(data);
-      this.convertToCsv(data.platoons, data.leadership);
-    });
-  },
+  }, 
+  // mounted() {
+  //   // Receive data from the main process
+  //   window.ipcRenderer.receive('receive-waterfall-data', (event, data) => {
+  //     console.log(data);
+  //     this.convertToCsv(data.platoons, data.leadership);
+  //   });
+  // },
   methods: {
     generateWaterfall() {
       // Logic for generating the waterfall here

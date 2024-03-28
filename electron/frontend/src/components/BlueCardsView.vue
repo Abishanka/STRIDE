@@ -49,51 +49,44 @@
       <div class="bluecard-form">
         <h1 class="bluecard-form-heading">Blue Card</h1>
         <div class="form-row" style="margin-top: 2vh;">
-          <div class="form-group" style="width: 15vw;">
+          <div class="form-group" style="width: 19.5vw;">
             <label for="cadet-id" class="form-label">Company</label>
             <input type="text" id="cadet-id" v-model="company" placeholder=" ">
           </div>
-          <div class="form-group" style="width: 15vw;">
+          <div class="form-group" style="width: 19.5vw;">
             <label for="cadet-id" class="form-label">Platoon</label>
             <input type="text" id="cadet-id" v-model="platoon" placeholder=" ">
           </div>
           <div class="form-group">
             <label for="cadet-id" class="form-label">Leadership</label>
             <div class="bluecard-options" v-for="option in leaderOptions" :key="option"
-            :class="{ 'leader-option': option === leader_option }" @click="leaderOptionClick(option)">{{ option }}</div>
+            :class="{ 'bluecard-selected-option': option === leader_option }" @click="leaderOptionClick(option)">{{ option }}</div>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label for="cadet-id" class="form-label">Sustain</label>
-            <select class="bluecard-options" v-model="sustain_1" @change="leaderOptionClick(sustain_1)">
-              <option v-for="option in leaderOptions" :key="option" :value="option">
-              {{ option }}
-              </option>
-            </select>
-            <select class="bluecard-options" v-model="sustain_2" @change="leaderOptionClick(sustain_2)">
-              <option v-for="option in leaderOptions" :key="option" :value="option">
-              {{ option }}
-              </option>
-            </select>
-            <select class="bluecard-options" v-model="sustain_2" @change="leaderOptionClick(sustain_2)">
-              <option v-for="option in leaderOptions" :key="option" :value="option">
-              {{ option }}
-              </option>
+            <select class="bluecard-options" v-for="(value, index) in sustain" :key="index" v-model="sustain[index]">
+                <option v-for="option in attributeOptions" :key="option" :value="option">
+                    {{ option }}
+                </option>
             </select>
           </div>
           <div class="form-group">
             <label for="cadet-id" class="form-label">Improve</label>
-            <div class="col leader-options" v-for="option in leaderOptions" :key="option"
-            :class="{ 'leader-option': option === leader_option }" @click="leaderOptionClick(option)">{{ option }}</div>
+            <select class="bluecard-options" v-for="(value, index) in improve" :key="index" v-model="improve[index]">
+                <option v-for="option in attributeOptions" :key="option" :value="option">
+                    {{ option }}
+                </option>
+            </select>
           </div>
           <div class="form-group">
             <label for="cadet-id" class="form-label">Overall Assessment</label>
-            <div class="col leader-options" v-for="option in leaderOptions" :key="option"
-            :class="{ 'leader-option': option === leader_option }" @click="leaderOptionClick(option)">{{ option }}</div>
-          </div>        
+            <div class="bluecard-options" v-for="option in overallAssessmentOptions" :key="option"
+            :class="{ 'bluecard-selected-option': option === overall_assessment }" @click="assessmentOptionClick(option)">{{ option }}</div>
+          </div>
         </div>
-      
+        <button class="create-bluecard" @click="createBlueCard">Create Bluecard</button>      
       </div>
     </div>
   </div>
@@ -104,8 +97,22 @@
 import { useRouter } from 'vue-router';
 
 export default {
-  name: 'BlueCardsView',
-  setup() {
+  name: 'BlueCardsView', 
+  data () {
+    return {
+      cadetId: null,
+      school: null,
+      firstName: null,
+      lastName: null,
+      company: null,
+      platoon: null,
+      leader_option: null,
+      sustain: [null, null, null],
+      improve: [null, null, null],
+      overall_assessment: null,
+      bluecard_date: null
+    }
+  }, setup() {
     const router = useRouter();
     function goHome() {
       router.push('/');
@@ -114,25 +121,30 @@ export default {
       goHome,
       sidebarOptions: ['Blue Card', 'Cadet Profile', 'Export'],
       leaderOptions: ['SL', 'PSG', 'PL'],
+      attributeOptions: ['Op1', 'Op2', 'Op3'],
+      overallAssessmentOptions: ['E','P','C','U','O']
     }
-  }, mounted() {
-    window.ipcRenderer.receive('matching-cadets', (event, data) => {
-      console.log(data);
-    }),
-    window.ipcRenderer.receive('submission-status', (event, data) =>{
-      //if successful data will be: "success". If there's an error data: err.message
-      console.log(data);
-    })
-  },
+  }, 
+  // mounted() {
+  //   window.ipcRenderer.receive('matching-cadets', (event, data) => {
+  //     console.log(data);
+  //   }),
+  //   window.ipcRenderer.receive('submission-status', (event, data) =>{
+  //     //if successful data will be: "success". If there's an error data: err.message
+  //     console.log(data);
+  //   })
+  // }, 
   methods: {
     leaderOptionClick(option) {
       this.leader_option = option;
-      console.log(this.leader_option);
+    },
+    assessmentOptionClick(option) {
+      this.overall_assessment = option;
     },
      handleInputChange(text) {
         window.ipcRenderer.send("get-matching-cadets", text);
      },
-      submitBlueCard(info){
+     createBlueCard(info){
         /*preferably send bluecard info as a json like:
         {
           uid:,
