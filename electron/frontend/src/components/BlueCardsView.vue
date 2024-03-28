@@ -115,17 +115,14 @@ export default {
       sidebarOptions: ['Blue Card', 'Cadet Profile', 'Export'],
       leaderOptions: ['SL', 'PSG', 'PL'],
     }
-  },mounted() {
+  }, mounted() {
     window.ipcRenderer.receive('matching-cadets', (event, data) => {
       console.log(data);
-    });
-  }, data() {
-    return {
-      cadetId: '',
-      company: '',
-      platoon: '',
-      leader_option: '',
-    }
+    }),
+    window.ipcRenderer.receive('submission-status', (event, data) =>{
+      //if successful data will be: "success". If there's an error data: err.message
+      console.log(data);
+    })
   },
   methods: {
     leaderOptionClick(option) {
@@ -134,7 +131,28 @@ export default {
     },
      handleInputChange(text) {
         window.ipcRenderer.send("get-matching-cadets", text);
-     }
+     },
+      submitBlueCard(info){
+        /*preferably send bluecard info as a json like:
+        {
+          uid:,
+          event:,
+          school:,
+          leadership_pos:,
+          sustain1:,
+          sustain2:,
+          sustain3:,
+          improve1:,
+          improve2:,
+          improve3:,
+          overall_assessment:,
+          bluecard_date:
+        }
+
+        cid will be automatically determined with insertion
+        */
+        window.ipcRenderer.send("upload-blue-card", info);
+      }
   }
 }
 

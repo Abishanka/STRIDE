@@ -91,17 +91,23 @@ function generateWaterfallData(
 
   let leadership = [];
 
+  let duplicates = false;
   for (p = 0; p < platoons.length; ++p) {
     let PLs = [];
     let PSGs = [];
     let SLs = [];
 
+    let assigned = [];
     for (let day = 0; day < ftx_length; ++day) {
       for (mission = 0; mission < missions_per_day; ++mission) {
         let currentSLs = [];
         for (squad = 0; squad < platoonsWithSquads[p].length; ++squad) {
           let cadetIndex = 0;
-          while (SLs.includes(platoonsWithSquads[p][squad][cadetIndex].uid)) {
+          while (
+            SLs.includes(platoonsWithSquads[p][squad][cadetIndex].uid) ||
+            (!duplicates &&
+              assigned.includes(platoonsWithSquads[p][squad][cadetIndex].uid))
+          ) {
             ++cadetIndex;
             if (cadetIndex >= platoonsWithSquads[p][squad].length) {
               cadetIndex = Math.floor(
@@ -120,14 +126,22 @@ function generateWaterfallData(
             day: day,
             mission: mission,
           });
+          assigned.push(currentSL.uid);
         }
         //Select PL
         cadetIndex = 0;
         while (
           currentSLs.includes(platoons[p][cadetIndex].uid) ||
-          PLs.includes(platoons[p][cadetIndex].uid)
+          PLs.includes(
+            platoons[p][cadetIndex].uid ||
+              (!duplicates && assigned.includes(platoons[p][cadetIndex].uid))
+          )
         ) {
           ++cadetIndex;
+          if (cadetIndex >= platoons[p].length) {
+            cadetIndex = Math.floor(Math.random() * platoons[p].length);
+            break;
+          }
         }
         currentPL = platoons[p][cadetIndex];
         PLs.push(currentPL.uid);
@@ -138,14 +152,20 @@ function generateWaterfallData(
           day: day,
           mission: mission,
         });
+        assigned.push(currentPL.uid);
         //Select PSG
         cadetIndex = 0;
         while (
           currentSLs.includes(platoons[p][cadetIndex].uid) ||
           PSGs.includes(platoons[p][cadetIndex].uid) ||
-          currentPL.uid == platoons[p][cadetIndex].uid
+          currentPL.uid == platoons[p][cadetIndex].uid ||
+          (!duplicates && assigned.includes(platoons[p][cadetIndex].uid))
         ) {
           ++cadetIndex;
+          if (cadetIndex >= platoons[p].length) {
+            cadetIndex = Math.floor(Math.random() * platoons[p].length);
+            break;
+          }
         }
         currentPSG = platoons[p][cadetIndex];
         PSGs.push(currentPSG.uid);
@@ -156,10 +176,15 @@ function generateWaterfallData(
           day: day,
           mission: mission,
         });
+        assigned.push(currentPSG.uid);
+
+        if (assigned.length == platoons[p].length) {
+          duplicates = true;
+        }
       }
     }
   }
-  //tempprintwaterfall(leadership);
+
   event.sender.send("receive-waterfall-data", {
     platoons: platoonsWithSquads,
     leadership: leadership,
@@ -206,21 +231,19 @@ function getWaterfallData(
     });
 }
 
-function getCadetProfile(cadetId) {
+function getCadetProfile(event, cadetId) {
   db.all("SELECT * FROM CadetProfile WHERE uid = ?", [cadetId], (err, rows) => {
     if (err) {
+      event.sender.send("receive-profile", err.message);
       console.error("Error selecting data:", err.message);
     } else {
-      if (rows.length > 0) {
-        console.log("Cadet data:", rows[0]);
-      } else {
-        console.log("Cadet with ID", cadetId, "not found.");
-      }
+      console.log("Cadet data:", rows);
+      event.sender.send("receive-profile", rows);
     }
   });
 }
 
-function updateCadetProfile(newValues, cadetId) {
+function updateCadetProfile(event, newValues, cadetId) {
   const columnsToUpdate = Object.keys(newValues)
     .map((column) => `${column} = ?`)
     .join(", ");
@@ -231,15 +254,17 @@ function updateCadetProfile(newValues, cadetId) {
     values,
     function (err) {
       if (err) {
+        event.sender.send("profile-update-status", err.message);
         console.error("Error updating row:", err.message);
       } else {
+        event.sender.send("profile-update-status", "success");
         console.log(`Row updated: ${this.changes} row(s) affected`);
       }
     }
   );
 }
 
-function insertBlueCard(blueCardData) {
+function insertBlueCard(event, blueCardData) {
   const columns = Object.keys(blueCardData).join(", ");
   const placeholders = Object.keys(blueCardData)
     .map(() => "?")
@@ -250,32 +275,35 @@ function insertBlueCard(blueCardData) {
 
   db.run(sql, values, function (err) {
     if (err) {
+      event.sender.send("submission-status", err.message);
       console.error("Error inserting row:", err.message);
     } else {
+      event.sender.send("submission-status", "success");
       console.log(`Row inserted with ID: ${this.lastID}`);
     }
   });
 }
 
-function insertCadetProfiles(cadetDataList) {
+function insertCadetProfiles(event, cadetDataList) {
   const placeholders = cadetDataList
-    .map(() => "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    .map(() => "(?, ?, ?, ?, ?, ?, ?, ?, ?)")
     .join(", ");
   const values = cadetDataList.flatMap((cadet) => Object.values(cadet));
 
-  const sql = `INSERT INTO CadetProfile (uid, cadet, first_name, last_name, photo, gender, program, ms_level, ftx_co, school) VALUES ${placeholders}`;
+  const sql = `INSERT INTO CadetProfile (cadet, first_name, last_name, photo, gender, program, ms_level, ftx_co, school) VALUES ${placeholders}`;
 
   db.run(sql, values, function (err) {
     if (err) {
+      event.sender.send("cadet-upload-status", err.message);
       console.error("Error inserting rows:", err.message);
     } else {
+      event.sender.send("cadet-upload-status", "success");
       console.log(`${this.changes} row(s) inserted`);
     }
   });
 }
 
 function getMatchingCadets(event, name) {
-  console.log(name);
   db.all(
     "SELECT * FROM CadetProfile WHERE first_name || ' ' || last_name LIKE ? || '%'",
     [name],
@@ -324,13 +352,16 @@ ipcMain.on("get-waterfall-data", (event, args) => {
   );
 });
 
-app.on("get-cadet-profile", (cadetId) => {
-  getCadetProfile(cadetId);
+ipcMain.on("get-cadet-profile", (event, args) => {
+  cadetId = args; //update as needed based on what frontend sends
+  getCadetProfile(event, cadetId);
 });
 
 //example use:  updateCadetProfile({ first_name: "newName", school: "newSchool" }, 2);
-app.on("edit-cadet-profile", (newValues, cadetId) => {
-  updateCadetProfile(newValues, cadetId);
+ipcMain.on("edit-cadet-profile", (event, args) => {
+  newValues = args.newValues; //update when frontend implemented to send
+  cadetId = args.id; //update when frontend implemented to send
+  updateCadetProfile(event, newValues, cadetId);
 });
 
 /*Example use:
@@ -343,8 +374,11 @@ const blueCardData = {
 };
 insertBlueCard(blueCardData);
 */
-app.on("upload-blue-card", (blueCardInfo) => {
-  insertBlueCard(blueCardInfo);
+ipcMain.on("upload-blue-card", (event, args) => {
+  const blueCardData = {
+    //set info from args
+  };
+  insertBlueCard(event, blueCardInfo);
 });
 
 /*Example use:
@@ -366,8 +400,9 @@ app.on("upload-blue-card", (blueCardInfo) => {
 
   insertCadetProfiles(cadetDataList);
   */
-app.on("upload-cadet-profiles", (cadetData) => {
-  insertCadetProfiles(cadetData);
+ipcMain.on("upload-cadet-profiles", (event, args) => {
+  cadetData = args; //update as needed
+  insertCadetProfiles(event, cadetData);
 });
 
 ipcMain.on("get-matching-cadets", (event, args) => {
