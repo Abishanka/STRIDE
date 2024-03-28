@@ -90,6 +90,30 @@ body {
     margin: 0;
 }
 
+.form-group .bluecard-options {
+    color: white;
+    display: inline-block;
+    align-items: center;
+    justify-content: center;
+    background-color: #191919;
+    padding: 1vh;
+    width: 4vw;
+    border-color: white;
+}
+
+.bluecard-options:hover {
+    background-color: #6EA171;
+    cursor: pointer;
+}
+
+.bluecard-options:focus {
+    outline: none;
+}
+
+.leader-option {
+    background-color: #4D784E !important;
+  }
+
 .bluecard-form {
     position: relative;
     width: 60vw;
