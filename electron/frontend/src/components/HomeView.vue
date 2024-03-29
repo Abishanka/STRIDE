@@ -49,7 +49,7 @@ export default {
     handleAdminPwdSubmit() {
       console.log(this.admn_pwd);
       // Navigate based on the selected_option
-      if (this.admn_pwd === 'deez') {
+      if (this.admn_pwd === 'rotc') {
         switch (this.selected_option) {
         case 'Waterfall':
           this.$router.push('/waterfall');

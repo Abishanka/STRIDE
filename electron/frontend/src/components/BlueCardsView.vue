@@ -9,7 +9,7 @@
       </div>
 
       <div class="container text-center sidebar-menu">
-        <div class="row sidebar-options" v-for="option in sidebarOptions" :key="option" @click="optionClick(option)">
+        <div class="row sidebar-options" v-for="option in sidebarOptions" :key="option" @click="sidebarOptionClick(option)">
           <div class="col options">{{ option }}</div>
         </div>
       </div>
@@ -95,10 +95,24 @@
 <script>
 
 import { useRouter } from 'vue-router';
+import { setcadetProfileReturn } from '../store.ts';
 
 export default {
   name: 'BlueCardsView', 
-  data () {
+  setup() {
+    const router = useRouter();
+    setcadetProfileReturn('bluecards');
+    function goHome() {
+      router.push('/');
+    }
+    return {
+      goHome,
+      sidebarOptions: ['Cadet Profile', 'Export'],
+      leaderOptions: ['SL', 'PSG', 'PL'],
+      attributeOptions: ['Op1', 'Op2', 'Op3'],
+      overallAssessmentOptions: ['E','P','C','U','O'],
+    }
+  }, data () {
     return {
       cadetId: null,
       school: null,
@@ -112,19 +126,8 @@ export default {
       overall_assessment: null,
       bluecard_date: null
     }
-  }, setup() {
-    const router = useRouter();
-    function goHome() {
-      router.push('/');
-    }
-    return {
-      goHome,
-      sidebarOptions: ['Blue Card', 'Cadet Profile', 'Export'],
-      leaderOptions: ['SL', 'PSG', 'PL'],
-      attributeOptions: ['Op1', 'Op2', 'Op3'],
-      overallAssessmentOptions: ['E','P','C','U','O']
-    }
-  }, 
+  },
+
   // mounted() {
   //   window.ipcRenderer.receive('matching-cadets', (event, data) => {
   //     console.log(data);
@@ -135,6 +138,18 @@ export default {
   //   })
   // }, 
   methods: {
+    sidebarOptionClick(option) {
+      switch (option) {
+        case 'Cadet Profile':
+          this.$router.push('/cadetprofile');
+          break;
+        case 'Export':
+          //Export the bluecards
+          break;
+        default:
+          console.log('No option selected or option not recognized');
+      }
+    },
     leaderOptionClick(option) {
       this.leader_option = option;
     },
@@ -164,7 +179,7 @@ export default {
         cid will be automatically determined with insertion
         */
         window.ipcRenderer.send("upload-blue-card", info);
-      }
+      },
   }
 }
 
