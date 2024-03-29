@@ -9,7 +9,7 @@
       </div>
 
       <div class="container text-center sidebar-menu">
-        <div class="row sidebar-options" v-for="option in sidebarOptions" :key="option" @click="optionClick(option)">
+        <div class="row sidebar-options" v-for="option in sidebarOptions" :key="option" @click="sidebarOptionClick(option)">
           <div class="col options">{{ option }}</div>
         </div>
       </div>
@@ -56,11 +56,13 @@
 
 <script>
 import { useRouter } from 'vue-router';
+import { setcadetProfileReturn } from '../store.ts';
 
 export default {
   name: 'WaterFallView',
   setup() {
     const router = useRouter();
+    setcadetProfileReturn('waterfall');
 
     function goHome() {
       router.push('/');
@@ -157,7 +159,7 @@ function convertToCsv(data, leadershipData) {
 
     return {
       goHome,
-      sidebarOptions: ['Waterfall', 'Cadet Profile', 'Export'],
+      sidebarOptions: ['Cadet Profile', 'Export'],
       waterfallCriteria: {
         ftxLength: '',
         missionsPerDay: '',
@@ -166,14 +168,27 @@ function convertToCsv(data, leadershipData) {
       },
       convertToCsv
     }
-  }, mounted() {
-    // Receive data from the main process
-    window.ipcRenderer.receive('receive-waterfall-data', (event, data) => {
-      console.log(data);
-      this.convertToCsv(data.platoons, data.leadership);
-    });
-  },
+  }, 
+  // mounted() {
+  //   // Receive data from the main process
+  //   window.ipcRenderer.receive('receive-waterfall-data', (event, data) => {
+  //     console.log(data);
+  //     this.convertToCsv(data.platoons, data.leadership);
+  //   });
+  // },
   methods: {
+    sidebarOptionClick(option) {
+      switch (option) {
+        case 'Cadet Profile':
+          this.$router.push('/cadetprofile');
+          break;
+        case 'Export':
+          //Export the Waterfall
+          break;
+        default:
+          console.log('No option selected or option not recognized');
+      }
+    },
     generateWaterfall() {
       // Logic for generating the waterfall here
       console.log('Generating waterfall with criteria:', this.waterfallCriteria);

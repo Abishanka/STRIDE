@@ -90,10 +90,49 @@ body {
     margin: 0;
 }
 
+.form-group .bluecard-options {
+    color: white;
+    display: inline-block;
+    align-items: center;
+    justify-content: center;
+    background-color: #191919;
+    padding: 1vh;
+    width: 4.7vw;
+    border-color: transparent;
+}
+
+.bluecard-options:hover {
+    background-color: #6EA171;
+    cursor: pointer;
+}
+
+.bluecard-options:focus {
+    outline: none;
+}
+
+.bluecard-selected-option {
+    background-color: #4D784E !important;
+}
+
+.create-bluecard {
+    width: 100%;
+    /* Adjust width for consistent padding */
+    padding: 2vh 2vh;
+    /* Match input padding */
+    margin: 2vh 0;
+    border-radius: 5px;
+    border: none;
+    background-color: #BBE0E3;
+    color: black;
+    cursor: pointer;
+}
+  
+
 .bluecard-form {
     position: relative;
     width: 60vw;
     padding-top: 2.5vh;
+    border: 1px solid;
     background-color: #1E1E1E;
     padding: 3vh;
     border-radius: 5px;

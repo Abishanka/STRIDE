@@ -49,7 +49,8 @@ export default {
     handleAdminPwdSubmit() {
       console.log(this.admn_pwd);
       // Navigate based on the selected_option
-      switch (this.selected_option) {
+      if (this.admn_pwd === 'rotc') {
+        switch (this.selected_option) {
         case 'Waterfall':
           this.$router.push('/waterfall');
           break;
@@ -61,6 +62,9 @@ export default {
           break;
         default:
           console.log('No option selected or option not recognized');
+      }
+      } else {
+        console.log('Incorrect password');
       }
     }
   }
