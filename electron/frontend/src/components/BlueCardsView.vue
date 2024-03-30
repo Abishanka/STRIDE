@@ -49,21 +49,25 @@
       <div class="bluecard-form">
         <h1 class="bluecard-form-heading">Blue Card</h1>
         <div class="form-row" style="margin-top: 2vh;">
-          <div class="form-group" style="width: 19.5vw;">
+          <div class="form-group" style="width: 17vw;">
             <label for="cadet-id" class="form-label">Company</label>
-            <input type="text" id="cadet-id" v-model="company" placeholder=" ">
+            <input type="text" id="company" v-model="company" placeholder=" ">
           </div>
-          <div class="form-group" style="width: 19.5vw;">
+          <div class="form-group" style="width: 17vw;">
             <label for="cadet-id" class="form-label">Platoon</label>
-            <input type="text" id="cadet-id" v-model="platoon" placeholder=" ">
+            <input type="number" id="platoon" v-model="platoon" placeholder=" ">
           </div>
+          <div class="form-group" style="width: 17vw;">
+            <label for="cadet-id" class="form-label">Squad</label>
+            <input type="number" id="squad" v-model="squad" placeholder=" ">
+          </div>
+        </div>
+        <div class="form-row">
           <div class="form-group">
             <label for="cadet-id" class="form-label">Leadership</label>
             <div class="bluecard-options" v-for="option in leaderOptions" :key="option"
             :class="{ 'bluecard-selected-option': option === leader_option }" @click="leaderOptionClick(option)">{{ option }}</div>
           </div>
-        </div>
-        <div class="form-row">
           <div class="form-group">
             <label for="cadet-id" class="form-label">Sustain</label>
             <select class="bluecard-options" v-for="(value, index) in sustain" :key="index" v-model="sustain[index]">
@@ -80,6 +84,8 @@
                 </option>
             </select>
           </div>
+        </div>
+        <div class="form-row">
           <div class="form-group">
             <label for="cadet-id" class="form-label">Overall Assessment</label>
             <div class="bluecard-options" v-for="option in overallAssessmentOptions" :key="option"
@@ -120,6 +126,7 @@ export default {
       lastName: null,
       company: null,
       platoon: null,
+      squad:  null,
       leader_option: null,
       sustain: [null, null, null],
       improve: [null, null, null],
@@ -183,10 +190,156 @@ export default {
   }
 }
 
-import '../assets/styles/BlueCardsView.css';
 import '../assets/styles/Sidebar.css';
 
 </script>
   
-<style></style>
+<style scoped>
+  .main-container {
+      width: 100vw;
+      height: 100vh;
+      margin: 0 auto;
+      padding: 0;
+      display: flex;
+  }
+    
+  /* https://stackoverflow.com/questions/70489057/dotted-background-with-pure-html-css */
+  .dotted {
+      background-image: radial-gradient(#191919 10%, transparent 10%),
+      radial-gradient(#ccc 10%, transparent 10%);
+      background-position: 0 0, 50px 50px;
+      background-size: 50px 50px;
+  }
+
+  .content-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      flex-grow: 1;
+      overflow: auto;
+  }
+
+  /* width */
+  ::-webkit-scrollbar {
+      width: 1.5vh;
+      height: 2vh;
+    }
+    
+    /* Track */
+    ::-webkit-scrollbar-track {
+      display: none;
+    }
+    
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: #4D784E;
+    }
+    
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #6EA171;
+    }
+
+  .cadet-form {
+      position: relative;
+      width: 60vw;
+      padding-top: 2.5vh;
+      background-color: #1E1E1E;
+      padding: 3vh;
+      border-radius: 5px;
+      text-align: center;
+  }
+
+  .cadet-form-heading {
+      font-family: sans-serif;
+      color: #6EA171;
+  }
+
+  .form-row {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin: 0;
+      margin-bottom: 3vh;
+  }
+
+  .form-row input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: none;
+      border-bottom: 1px solid #fff;
+      background-color: #1E1E1E;
+      color: #D2D1D1;
+  }
+
+  .form-row input:focus {
+      outline: none;
+      border-bottom: 1px solid #6EA171;
+  }
+
+  .form-label {
+      margin-bottom: 5px;
+      display: block;
+      text-align: left;
+      color: #D2D1D1;
+  }
+
+  .form-group {
+      margin: 0;
+  }
+
+  .form-group .bluecard-options {
+      color: white;
+      display: inline-block;
+      align-items: center;
+      justify-content: center;
+      background-color: #191919;
+      padding: 1vh;
+      width: 5.6vw;
+      border-color: transparent;
+  }
+
+  .bluecard-options:hover {
+      background-color: #6EA171;
+      cursor: pointer;
+  }
+
+  .bluecard-options:focus {
+      outline: none;
+  }
+
+  .bluecard-selected-option {
+      background-color: #4D784E !important;
+  }
+
+  .create-bluecard {
+      width: 100%;
+      /* Adjust width for consistent padding */
+      padding: 2vh 2vh;
+      /* Match input padding */
+      margin: 2vh 0;
+      border-radius: 5px;
+      border: none;
+      background-color: #BBE0E3;
+      color: black;
+      cursor: pointer;
+  }
+    
+
+  .bluecard-form {
+      position: relative;
+      width: 60vw;
+      padding-top: 2.5vh;
+      border: 1px solid;
+      background-color: #1E1E1E;
+      padding: 3vh;
+      border-radius: 5px;
+      text-align: center;
+      border-color: #BBE0E3;
+      border-width: 1px;
+      color: #BBE0E3;
+  }
+</style>
   

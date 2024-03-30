@@ -7,15 +7,42 @@
           </div>
           <div class="headername">STRIDE</div>
         </div>
-  
         <div class="container text-center sidebar-menu">
           <div class="row sidebar-options" v-for="option in sidebarOptions" :key="option" @click="sidebarOptionClick(option)">
             <div class="col options">{{ option }}</div>
           </div>
         </div>
-  
         <div class="container mt-auto position-absolute bottom-0 homebutton" @click="goHome">
           Return to Home
+        </div>
+      </div>
+      <div class="content-container">
+        <div class="cadet-form">
+          <h1 class="cadet-form-heading">Cadet</h1>
+          <div class="form-row">
+            <label for="search-cadet" class="form-label">Search Cadet Name</label>
+            <input type="text" id="search-cadet" v-model="searchText" @input="handleInputChange(searchText)" placeholder=" ">
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="width: 15vw;">
+              <label for="cadet-id" class="form-label">Cadet Unique ID</label>
+              <input type="text" id="cadet-id" v-model="cadetId" placeholder=" " readonly>
+            </div>
+            <div class="form-group" style="width: 40vw;">
+              <label for="school" class="form-label">School</label>
+              <input type="text" id="school" v-model="school" placeholder=" " readonly>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="first-name" class="form-label" style="width: 27.5vw;">First Name</label>
+              <input type="text" id="first-name" v-model="firstName" placeholder=" " readonly>
+            </div>
+            <div class="form-group">
+              <label for="last-name" class="form-label" style="width: 27.5vw;">Last Name</label>
+              <input type="text" id="last-name" v-model="lastName" placeholder=" " readonly>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -66,7 +93,24 @@ export default {
   }
 }
 
-import '../assets/styles/HomeView.css';
 import '../assets/styles/Sidebar.css';
 
 </script>
+
+<style scoped>    
+  /* https://stackoverflow.com/questions/70489057/dotted-background-with-pure-html-css */
+  .dotted {
+      background-image: radial-gradient(#191919 10%, transparent 10%),
+      radial-gradient(#ccc 10%, transparent 10%);
+      background-position: 0 0, 50px 50px;
+      background-size: 50px 50px;
+  }
+    
+  .main-container {
+      width: 100vw;
+      height: 100vh; 
+      margin: 0 auto;
+      padding: 0;
+      display: flex;
+  }
+</style>

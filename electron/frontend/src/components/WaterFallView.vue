@@ -197,8 +197,129 @@ function convertToCsv(data, leadershipData) {
   },  
 }
 
-import '../assets/styles/WaterFallView.css';
 import '../assets/styles/Sidebar.css';
 </script>
 
-<style scoped></style>
+<style scoped>
+  .main-container {
+    width: 100vw;
+    height: 100vh;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+  }
+
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    flex-grow: 1;
+  }
+
+  .waterfall-criteria-container {
+    position: relative;
+    width: 40vw;
+    /* Fixed width */
+    padding-top: 2.5vh;
+    /* Space for the title line */
+  }
+
+  .waterfall-criteria {
+    background-color: #1E1E1E;
+    padding: 3vh;
+    border-radius: 5px;
+    border: 1px solid #fff;
+    text-align: center;
+  }
+
+  .waterfall-heading {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1E1E1E;
+    color: #6EA171;
+    padding: 0 1vw;
+  }
+
+  .criteria-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 0 ;
+    margin-top: 2vh;
+    /* Negative margin for gutters */
+  }
+
+  .criteria-input {
+    flex: 1 1;
+    padding: 0 1vw;
+  }
+
+  .criteria-input label {
+    color: #D2D1D1;
+    font-family: Helvetica;
+    text-align: left;
+    display: block;
+  }
+
+  .criteria-input input {
+    width: 100%;
+    padding: 0;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+    padding: 0.2vh;
+    border: none;
+    border-bottom: 1px solid #fff;
+    background-color: #1E1E1E;
+    color: #D2D1D1;
+  }
+
+  .criteria-input input:focus {
+    outline: none;
+    border-bottom: 1px solid #6EA171;
+  }
+
+  .generate-button {
+    width: 100%;
+    /* Adjust width for consistent padding */
+    padding: 2vh 2vh;
+    /* Match input padding */
+    margin: 2vh 0;
+    border-radius: 5px;
+    border: none;
+    background-color: #4D784E;
+    color: white;
+    cursor: pointer;
+  }
+
+  .generate-button:hover {
+    opacity: 0.8;
+  }
+
+  .update-warning {
+    color: red;
+    font-size: 0.75rem;
+    /* Smaller font size for the warning */
+    margin-top: 10px;
+    /* Space from the button */
+  }
+
+  .output-container {
+    background-color: #333;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    color: #fff;
+    padding: 20px;
+    width: calc(100% - 40px);
+    /* Full width minus padding, matching the criteria box */
+    box-sizing: border-box;
+    text-align: center;
+    margin-top: 2vh;
+  }
+
+  .output-container p {
+    margin: 0;
+  }
+</style>
