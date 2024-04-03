@@ -135,15 +135,15 @@ export default {
     }
   },
 
-  // mounted() {
-  //   window.ipcRenderer.receive('matching-cadets', (event, data) => {
-  //     console.log(data);
-  //   }),
-  //   window.ipcRenderer.receive('submission-status', (event, data) =>{
-  //     //if successful data will be: "success". If there's an error data: err.message
-  //     console.log(data);
-  //   })
-  // }, 
+  mounted() {
+    window.ipcRenderer.receive('matching-cadets', (event, data) => {
+      console.log(data);
+    }),
+    window.ipcRenderer.receive('submission-status', (event, data) =>{
+      //if successful data will be: "success". If there's an error data: err.message
+      console.log(data);
+    })
+  }, 
   methods: {
     sidebarOptionClick(option) {
       switch (option) {
@@ -166,26 +166,23 @@ export default {
      handleInputChange(text) {
         window.ipcRenderer.send("get-matching-cadets", text);
      },
-     createBlueCard(info){
-        /*preferably send bluecard info as a json like:
+     createBlueCard(){
+        let blueCardInfo =
         {
-          uid:,
-          event:,
-          school:,
-          leadership_pos:,
-          sustain1:,
-          sustain2:,
-          sustain3:,
-          improve1:,
-          improve2:,
-          improve3:,
-          overall_assessment:,
-          bluecard_date:
+          uid: this.cadetId,
+          event: this.event,
+          school:this.school,
+          leadership_pos:this.leader_option,
+          sustain1:this.sustain[0],
+          sustain2:this.sustain[1],
+          sustain3:this.sustain[2],
+          improve1:this.improve[0],
+          improve2:this.improve[1],
+          improve3:this.improve[2],
+          overall_assessment:this.overall_assessment,
+          bluecard_date: this.bluecard_date
         }
-
-        cid will be automatically determined with insertion
-        */
-        window.ipcRenderer.send("upload-blue-card", info);
+        window.ipcRenderer.send("upload-blue-card", blueCardInfo);
       },
   }
 }

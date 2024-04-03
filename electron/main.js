@@ -260,7 +260,7 @@ function insertBlueCard(event, blueCardData) {
   const values = Object.values(blueCardData);
 
   const sql = `INSERT INTO BlueCards (${columns}) VALUES (${placeholders})`;
-
+  console.log(sql);
   db.run(sql, values, function (err) {
     if (err) {
       event.sender.send("submission-status", err.message);
@@ -356,10 +356,9 @@ const blueCardData = {
 insertBlueCard(blueCardData);
 */
 ipcMain.on("upload-blue-card", (event, args) => {
-  const blueCardData = {
-    //set info from args
-  };
-  insertBlueCard(event, blueCardInfo);
+  console.log(args);
+  const blueCardData = args;
+  insertBlueCard(event, args);
 });
 
 /*Example use:
