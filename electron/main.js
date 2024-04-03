@@ -357,7 +357,6 @@ insertBlueCard(blueCardData);
 */
 ipcMain.on("upload-blue-card", (event, args) => {
   console.log(args);
-  const blueCardData = args;
   insertBlueCard(event, args);
 });
 
@@ -387,4 +386,8 @@ ipcMain.on("upload-cadet-profiles", (event, args) => {
 
 ipcMain.on("get-matching-cadets", (event, args) => {
   getMatchingCadets(event, args);
+});
+
+ipcMain.on("get-analysis-results", (event, args) => {
+  //analysis logic
 });
