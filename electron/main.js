@@ -231,18 +231,6 @@ function getWaterfallData(
     });
 }
 
-function getCadetProfile(event, cadetId) {
-  db.all("SELECT * FROM CadetProfile WHERE uid = ?", [cadetId], (err, rows) => {
-    if (err) {
-      event.sender.send("receive-profile", err.message);
-      console.error("Error selecting data:", err.message);
-    } else {
-      console.log("Cadet data:", rows);
-      event.sender.send("receive-profile", rows);
-    }
-  });
-}
-
 function updateCadetProfile(event, newValues, cadetId) {
   const columnsToUpdate = Object.keys(newValues)
     .map((column) => `${column} = ?`)
@@ -285,9 +273,7 @@ function insertBlueCard(event, blueCardData) {
 }
 
 function insertCadetProfiles(event, cadetDataList) {
-  const placeholders = cadetDataList
-    .map(() => "(?, ?, ?, ?, ?, ?, ?, ?, ?)")
-    .join(", ");
+  const placeholders = cadetDataList.map(() => "(?, ?, ?)").join(", ");
   const values = cadetDataList.flatMap((cadet) => Object.values(cadet));
 
   const sql = `INSERT INTO CadetProfile (cadet, first_name, last_name, photo, gender, program, ms_level, ftx_co, school) VALUES ${placeholders}`;
@@ -350,11 +336,6 @@ ipcMain.on("get-waterfall-data", (event, args) => {
     args.missionsPerDay,
     args.cadetsPerSquad
   );
-});
-
-ipcMain.on("get-cadet-profile", (event, args) => {
-  cadetId = args; //update as needed based on what frontend sends
-  getCadetProfile(event, cadetId);
 });
 
 //example use:  updateCadetProfile({ first_name: "newName", school: "newSchool" }, 2);
