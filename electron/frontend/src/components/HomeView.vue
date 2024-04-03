@@ -21,7 +21,7 @@
         <label for="password">Enter Admin Password</label>
         <div class="input-group mb-3 input-group-lg w-50">
           <input type="password" class="form-control admin-pwd-input" placeholder="Admin Password" name="password"
-            v-model="admn_pwd">
+            v-model="admn_pwd" @keyup.enter="handleAdminPwdSubmit()">
           <div class="input-group-append">
             <button class="btn btn-lg admin-pwd-btn" type="submit" @click="handleAdminPwdSubmit()">Submit →</button>
           </div>
