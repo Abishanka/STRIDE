@@ -86,6 +86,26 @@
           </div>
         </div>
         <div class="form-row">
+          <div class="form-group" style="width: 17vw;">
+            <label for="event-name" class="form-label">Event Name</label>
+            <input type="text" id="event-name" v-model="eventName" placeholder=" ">
+          </div>
+          <div class="form-group" style="width: 17vw;">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" id="date" v-model="bluecard_date">
+          </div>
+          <div class="form-group" style="width: 17vw;">
+            <label for="mission-type" class="form-label">Mission Type</label>
+            <select id="mission-type" v-model="missionType" class="bluecard-options" style="width: 17vw;">
+              <option value="ambush">Ambush</option>
+              <option value="attack">Attack</option>
+              <option value="raid">Raid</option>
+              <option value="mtc">Movement to Contact (MTC)</option>
+              <option value="defense">Defense</option>
+            </select>
+          </div>          
+        </div>
+        <div class="form-row">
           <div class="form-group">
             <label for="cadet-id" class="form-label">Overall Assessment</label>
             <div class="bluecard-options" v-for="option in overallAssessmentOptions" :key="option"
@@ -131,7 +151,7 @@ export default {
       sustain: [null, null, null],
       improve: [null, null, null],
       overall_assessment: null,
-      bluecard_date: null
+      bluecard_date: new Date().toISOString().substr(0, 10),
     }
   },
 
