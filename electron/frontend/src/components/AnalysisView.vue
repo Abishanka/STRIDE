@@ -38,7 +38,16 @@ export default {
       goHome,
       sidebarOptions: ['Blue Card', 'Cadet Profile', 'Export']
     }
-  }
+  }, mounted() {
+    window.ipcRenderer.receive('receive-analysis-results', (event, data) => {
+      console.log(data);
+    })
+  },
+  methods: {
+    submitOptions() {
+        window.ipcRenderer.send("get-analysis-results");
+      }
+    }
 }
 </script>
   
