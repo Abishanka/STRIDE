@@ -142,11 +142,13 @@ export default {
     return {
       cadetId: null,
       school: null,
+      eventName: null,
       firstName: null,
       lastName: null,
       company: null,
       platoon: null,
       squad:  null,
+      missionType: null,
       leader_option: null,
       sustain: [null, null, null],
       improve: [null, null, null],
@@ -190,11 +192,12 @@ export default {
         let blueCardInfo =
         {
           uid: this.cadetId,
-          event: this.event,
           school:this.school,
+          eventName: this.eventName,
           company: this.company,
           squad: this.squad,
           platoon: this.platoon,
+          mission_type: this.missionType,
           leadership_pos:this.leader_option,
           sustain1:this.sustain[0],
           sustain2:this.sustain[1],
