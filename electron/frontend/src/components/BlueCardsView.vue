@@ -135,7 +135,7 @@ export default {
       goHome,
       sidebarOptions: ['Cadet Profile', 'Export'],
       leaderOptions: ['SL', 'PSG', 'PL'],
-      attributeOptions: ['Op1', 'Op2', 'Op3'],
+      attributeOptions: ["AV", "BT", "CF", "CO", "CP", "DP", "DO", "EI", "EM", "EX", "FT", "GR", "IN", "IT", "LD", "LE", "MA", "MB", "PS", "RS", "SJ", "SP", "WE"],
       overallAssessmentOptions: ['E','P','C','U','O'],
     }
   }, data () {
