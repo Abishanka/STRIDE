@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container dotted">
+  <div class="main-container dotted d-flex justify-content-center">
     <div class="sidebar container" style="margin-left: 0; margin-right: 0;">
       <div class="d-flex align-items-center">
         <div class="logo">
@@ -18,9 +18,9 @@
         Return to Home
       </div>
     </div>
-    <div class="content-container text-center">
+    <div class="content-container text-center d-flex flex-column align-items-center">
       <!-- Dropdown and Submit Button Grouped Together, Centered Horizontally and Located at the Top Vertically -->
-      <div v-if="showSchoolsDropdown" class="dropdown-submit-container d-flex justify-content-center align-items-start" style="margin-top: 10px; width: 100%;">
+      <div v-if="showSchoolsDropdown" class="dropdown-submit-container d-flex flex-column align-items-center" style="margin-top: 10px; width: 100%;">
         <select v-model="selectedSchool" class="styled-dropdown" style="width: 50%; min-width: 250px;">
           <option disabled value="">Please select one</option>
           <option v-for="school in uniqueSchools" :key="school">{{ school }}</option>
@@ -28,13 +28,13 @@
         <button @click="submitSchoolSelection" class="submit-button mt-2">Submit</button>
       </div>
       <!-- Chart Containers in a Column under the Submit Button, Centered Horizontally and Located at the Top Vertically -->
-      <div class="chart-container" style="margin-top: 20px; max-width: 90%;">
+      <div v-if="showSchoolsDropdown" class="chart-container" style="margin-top: 20px; max-width: 85%;">
         <canvas id="overall-assessment-chart"></canvas>
       </div>
-      <div class="chart-container" style="margin-top: 20px; max-width: 90%;">
+      <div v-if="showSchoolsDropdown" class="chart-container" style="margin-top: 20px; max-width: 85%;">
         <canvas id="sustain-chart"></canvas>
       </div>
-      <div class="chart-container" style="margin-top: 20px; max-width: 90%;">
+      <div v-if="showSchoolsDropdown" class="chart-container" style="margin-top: 20px; max-width: 85%;">
         <canvas id="improve-chart"></canvas>
       </div>
     </div>
@@ -193,8 +193,8 @@ export default {
 
 /* Harmonized styles for charts with the rest of the page, adjusted for new column */
 .chart-container {
-  column: 2;
   width: 100%; /* Adjusted width to fill the new column */
+  height: 50%;
   margin-top: 20px; /* Adjusted margin to position charts at the top vertically */
   padding: 15px; /* Padding for visual space around the charts */
   background-color: #222; /* Dark theme background for charts */
