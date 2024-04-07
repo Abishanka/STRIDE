@@ -303,6 +303,87 @@ function getMatchingCadets(event, name) {
   );
 }
 
+function getUniqueSchools(event) {
+  // SELECT DISTINCT school FROM CadetProfile
+  const sql = "SELECT DISTINCT school FROM BlueCards";
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      console.error("Error fetching unique schools:", err.message);
+    } else {
+      event.sender.send("unique-schools", rows);
+    }
+  });
+}
+
+function getOverallAssessmentBySchool(event, school) {
+  // SELECT overall_assessment, count(*) FROM
+  // (SELECT overall_assessment FROM BlueCards WHERE school = "MNO School") 
+  const sql = `
+    SELECT overall_assessment, count(*) as count FROM
+    (SELECT overall_assessment FROM BlueCards WHERE school = ?) 
+    GROUP BY overall_assessment
+  `;
+
+  db.all(sql, [school], (err, rows) => {
+    if (err) {
+      console.error("Error fetching overall assessment data by school:", err.message);
+    } else {
+      event.sender.send("overall-assessment-by-school-data", rows);
+    }
+  });
+}
+
+function getSustainBySchool(event, school) {
+  // SELECT sustain, count(*) from
+  // (SELECT sustain1 AS sustain FROM BlueCards WHERE school = "ABC High School"
+  // UNION ALL
+  // SELECT sustain2 AS sustain FROM BlueCards WHERE school = "ABC High School"
+  // UNION ALL
+  // SELECT sustain3 AS sustain FROM BlueCards WHERE school = "ABC High School")
+  // GROUP BY sustain
+  const sql = `
+    SELECT sustain, count(*) as count FROM
+    (
+      SELECT sustain1 AS sustain FROM BlueCards WHERE school = ?
+      UNION ALL
+      SELECT sustain2 AS sustain FROM BlueCards WHERE school = ?
+      UNION ALL
+      SELECT sustain3 AS sustain FROM BlueCards WHERE school = ?
+    )
+    GROUP BY sustain
+  `;
+
+  db.all(sql, [school, school, school], (err, rows) => {
+    if (err) {
+      console.error("Error fetching sustain data by school:", err.message);
+    } else {
+      event.sender.send("sustain-by-school-data", rows);
+    }
+  });
+}
+
+function getImproveBySchool(event, school) {
+  const sql = `
+    SELECT improve, count(*) as count FROM
+    (
+      SELECT improve1 AS improve FROM BlueCards WHERE school = ?
+      UNION ALL
+      SELECT improve2 AS improve FROM BlueCards WHERE school = ?
+      UNION ALL
+      SELECT improve3 AS improve FROM BlueCards WHERE school = ?
+    )
+    GROUP BY improve
+  `;
+
+  db.all(sql, [school, school, school], (err, rows) => {
+    if (err) {
+      console.error("Error fetching improve data by school:", err.message);
+    } else {
+      event.sender.send("improve-by-school-data", rows);
+    }
+  });
+}
+
 app.whenReady().then(createWindow);
 
 // Close the database connection
@@ -336,6 +417,24 @@ ipcMain.on("get-waterfall-data", (event, args) => {
     args.missionsPerDay,
     args.cadetsPerSquad
   );
+});
+
+ipcMain.on("get-unique-schools", (event) => {
+  getUniqueSchools(event);
+});
+
+ipcMain.on("get-overall-assessment-by-school", (event, args) => {
+  getOverallAssessmentBySchool(event, args);
+});
+
+ipcMain.on("get-sustain-by-school", (event, args) => {
+  console.log(args);
+  getSustainBySchool(event, args);
+});
+
+ipcMain.on("get-improve-by-school", (event, args) => {
+  console.log(args);
+  getImproveBySchool(event, args);
 });
 
 //example use:  updateCadetProfile({ first_name: "newName", school: "newSchool" }, 2);
@@ -391,3 +490,4 @@ ipcMain.on("get-matching-cadets", (event, args) => {
 ipcMain.on("get-analysis-results", (event, args) => {
   //analysis logic
 });
+
