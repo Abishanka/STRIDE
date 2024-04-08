@@ -85,21 +85,9 @@
         </div>
       </div>
       <div class="output-container">
-        <table v-if="tableData.length > 0">
-          <thead>
-            <tr>
-              <th v-for="header in tableHeaders" :key="header">{{ header }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in tableData" :key="row['Last Name']">
-              <td v-for="header in tableHeaders" :key="header">{{ row[header] }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <button v-if="tableData.length > 0" class="generate-button" @click="modalVisible = true">Reopen Schedule Modal</button>
         <p v-else>Awaiting input parameters...</p>
       </div>
-
     </div>
   </div>
 </template>
@@ -569,5 +557,22 @@ tr:nth-child(even) {
 .modal-content::-webkit-scrollbar-thumb:hover {
   background: #6EA171;
 }
+
+.reopen-modal-button {
+  background-color: #BBE0E3; /* Light teal background to match existing button styles */
+  color: black; /* Text color for readability */
+  border: none;
+  padding: 10px 15px; /* Padding to match existing buttons */
+  border-radius: 5px; /* Rounded corners as per your design */
+  font-family: Helvetica; /* Assuming you're using Helvetica throughout your app */
+  cursor: pointer; /* Cursor to pointer on hover for usability */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+  margin-top: 20px; /* Ensures some spacing from the table or the 'Awaiting input...' message */
+}
+
+.reopen-modal-button:hover {
+  background-color: #4D784E; /* Darker shade for hover state to match the generate-button hover color */
+}
+
 
 </style>
