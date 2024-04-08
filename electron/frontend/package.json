@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
+    "chart.js": "^4.4.2",
     "core-js": "^3.8.3",
     "electron": "^29.2.0",
     "sqlite3": "^5.1.7",
