@@ -19,23 +19,41 @@
       </div>
     </div>
     <div class="content-container text-center d-flex flex-column align-items-center">
-      <!-- Dropdown and Submit Button Grouped Together, Centered Horizontally and Located at the Top Vertically -->
-      <div v-if="showSchoolsDropdown" class="dropdown-submit-container d-flex flex-column align-items-center" style="margin-top: 10px; width: 100%;">
-        <select v-model="selectedSchool" class="styled-dropdown" style="width: 50%; min-width: 250px;">
-          <option disabled value="">Please select one</option>
-          <option v-for="school in uniqueSchools" :key="school">{{ school }}</option>
-        </select>
-        <button @click="submitSchoolSelection" class="submit-button mt-2">Submit</button>
-      </div>
-      <!-- Chart Containers in a Column under the Submit Button, Centered Horizontally and Located at the Top Vertically -->
-      <div v-if="showSchoolsDropdown" class="chart-container" style="margin-top: 20px; max-width: 85%;">
-        <canvas id="overall-assessment-chart"></canvas>
-      </div>
-      <div v-if="showSchoolsDropdown" class="chart-container" style="margin-top: 20px; max-width: 85%;">
-        <canvas id="sustain-chart"></canvas>
-      </div>
-      <div v-if="showSchoolsDropdown" class="chart-container" style="margin-top: 20px; max-width: 85%;">
-        <canvas id="improve-chart"></canvas>
+      <!-- First School Selection Dropdown, Submit Button, and Charts -->
+      <div class="comparison-container d-flex justify-content-between" style="width: 100%;">
+        <div v-if="showSchoolsDropdown" class="dropdown-submit-container d-flex flex-column align-items-center" style="margin-top: 10px; width: 20vw;">
+          <select v-model="selectedSchool" class="styled-dropdown" style="width: 100%; min-width: 250px;">
+            <option disabled value="">Please select one</option>
+            <option v-for="school in uniqueSchools" :key="school">{{ school }}</option>
+          </select>
+          <button @click="submitSchoolSelection" class="submit-button mt-2">Submit</button>
+          <div class="chart-container" style="margin-top: 20px; max-width: 100%;">
+            <canvas id="overall-assessment-chart"></canvas>
+          </div>
+          <div class="chart-container" style="margin-top: 20px; max-width: 100%;">
+            <canvas id="sustain-chart"></canvas>
+          </div>
+          <div class="chart-container" style="margin-top: 20px; max-width: 100%;">
+            <canvas id="improve-chart"></canvas>
+          </div>
+        </div>
+        <!-- Second School Selection Dropdown, Submit Button, and Charts for Comparison -->
+        <div v-if="showSchoolsDropdown" class="dropdown-submit-container d-flex flex-column align-items-center" style="margin-top: 10px; width: 20vw;">
+          <select v-model="selectedSchool2" class="styled-dropdown" style="width: 100%;">
+            <option disabled value="">Please select one</option>
+            <option v-for="school in uniqueSchools" :key="school">{{ school }}</option>
+          </select>
+          <button @click="submitSchoolSelection2" class="submit-button mt-2">Submit</button>
+          <div class="chart-container" style="margin-top: 20px; max-width: 100%;">
+            <canvas id="overall-assessment-chart2"></canvas>
+          </div>
+          <div class="chart-container" style="margin-top: 20px; max-width: 100%;">
+            <canvas id="sustain-chart2"></canvas>
+          </div>
+          <div class="chart-container" style="margin-top: 20px; max-width: 100%;">
+            <canvas id="improve-chart2"></canvas>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -54,12 +72,20 @@ export default {
     const showSchoolsDropdown = ref(false);
     const uniqueSchools = ref([]);
     const selectedSchool = ref('');
+    const selectedSchool2 = ref('');
     const overallAssessmentData = ref([]);
+    const overallAssessmentData2 = ref([]);
     const sustainData = ref([]);
+    const sustainData2 = ref([]);
     const improveData = ref([]);
+    const improveData2 = ref([]);
     let overallAssessmentChart = ref(null);
     let sustainChart = ref(null);
     let improveChart = ref(null);
+    let overallAssessmentChart2 = ref(null);
+    let sustainChart2 = ref(null);
+    let improveChart2 = ref(null);
+    let curSelection = 1;
 
     function goHome() {
       router.push('/');
@@ -75,9 +101,19 @@ export default {
     function submitSchoolSelection() {
       if (selectedSchool.value) {
         // Request new data for the selected school
+        curSelection = 1;
         window.ipcRenderer.send("get-overall-assessment-by-school", selectedSchool.value);
         window.ipcRenderer.send("get-sustain-by-school", selectedSchool.value);
         window.ipcRenderer.send("get-improve-by-school", selectedSchool.value);
+      }
+    }
+    function submitSchoolSelection2() {
+      if (selectedSchool2.value) {
+        // Request new data for the selected school
+        curSelection = 2;
+        window.ipcRenderer.send("get-overall-assessment-by-school", selectedSchool2.value);
+        window.ipcRenderer.send("get-sustain-by-school", selectedSchool2.value);
+        window.ipcRenderer.send("get-improve-by-school", selectedSchool2.value);
       }
     }
     onMounted(() => {
@@ -85,19 +121,48 @@ export default {
         uniqueSchools.value = schools.map(school => school.school);
       });
       window.ipcRenderer.receive('overall-assessment-by-school-data', (event, data) => {
-        overallAssessmentData.value = data.map(item => ({ label: item.overall_assessment, value: item.count }));
-        if (overallAssessmentChart.value) overallAssessmentChart.value.destroy();
-        overallAssessmentChart.value = createChart('overall-assessment-chart', 'Overall Assessment', overallAssessmentData.value);
+        console.log(curSelection);
+        if(curSelection==1)
+        {
+          overallAssessmentData.value = data.map(item => ({ label: item.overall_assessment, value: item.count }));
+          if (overallAssessmentChart.value) overallAssessmentChart.value.destroy();
+          overallAssessmentChart.value = createChart('overall-assessment-chart', 'Overall Assessment', overallAssessmentData.value);
+        }
+        else
+        {
+          overallAssessmentData2.value = data.map(item => ({ label: item.overall_assessment, value: item.count }));
+          if (overallAssessmentChart2.value) overallAssessmentChart2.value.destroy();
+          overallAssessmentChart2.value = createChart('overall-assessment-chart2', 'Overall Assessment', overallAssessmentData2.value);
+        }
       });
       window.ipcRenderer.receive('sustain-by-school-data', (event, data) => {
-        sustainData.value = data.map(item => ({ label: item.sustain, value: item.count }));
-        if (sustainChart.value) sustainChart.value.destroy();
-        sustainChart.value = createChart('sustain-chart', 'Sustain', sustainData.value);
+        if(curSelection==1)
+        {
+          sustainData.value = data.map(item => ({ label: item.sustain, value: item.count }));
+          if (sustainChart.value) sustainChart.value.destroy();
+          sustainChart.value = createChart('sustain-chart', 'Sustain', sustainData.value);
+        }
+        else
+        {
+          sustainData2.value = data.map(item => ({ label: item.sustain, value: item.count }));
+          if (sustainChart2.value) sustainChart2.value.destroy();
+          sustainChart2.value = createChart('sustain-chart2', 'Sustain', sustainData2.value);          
+        }
       });
       window.ipcRenderer.receive('improve-by-school-data', (event, data) => {
-        improveData.value = data.map(item => ({ label: item.improve, value: item.count }));
-        if (improveChart.value) improveChart.value.destroy();
-        improveChart.value = createChart('improve-chart', 'Improve', improveData.value);
+        if(curSelection==1)
+        {
+          improveData.value = data.map(item => ({ label: item.improve, value: item.count }));
+          if (improveChart.value) improveChart.value.destroy();
+          improveChart.value = createChart('improve-chart', 'Improve', improveData.value);
+        }
+        else
+        {
+          improveData2.value = data.map(item => ({ label: item.improve, value: item.count }));
+          if (improveChart2.value) improveChart2.value.destroy();
+          improveChart2.value = createChart('improve-chart2', 'Improve', improveData2.value);          
+        }
+
       });
     });
 
@@ -143,10 +208,12 @@ export default {
       goHome,
       handleOptionClick,
       submitSchoolSelection,
+      submitSchoolSelection2,
       sidebarOptions: ['Blue Card', 'Cadet Profile', 'Export'],
       showSchoolsDropdown,
       uniqueSchools,
       selectedSchool,
+      selectedSchool2,
       overallAssessmentData,
       sustainData,
       improveData
