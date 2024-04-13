@@ -21,9 +21,12 @@
     <div class="content-container">
       <div class="cadet-form">
         <h1 class="cadet-form-heading">Cadet</h1>
-        <div class="form-row">
+        <div class="form-row search-cadet-row">
           <label for="search-cadet" class="form-label">Search Cadet Name</label>
-          <input type="text" id="search-cadet" v-model="searchText" @input="handleInputChange(searchText)" placeholder=" ">
+          <input type="text" id="search-cadet" v-model="searchText" @input="handleSearchChange(searchText)" placeholder=" ">
+          <select size="5" class="search-cadet-dropdown" v-if="searchDropdownVisible" @change="handleSearchSelection($event.target.value)">
+              <option v-for="option in searchOptions" v-bind:value="option" v-bind:key="option">{{ option }}</option>
+          </select>
         </div>
         <div class="form-row">
           <div class="form-group" style="width: 15vw;">
@@ -154,6 +157,8 @@ export default {
       improve: [null, null, null],
       overall_assessment: null,
       bluecard_date: new Date().toISOString().substr(0, 10),
+      searchDropdownVisible: false,
+      searchOptions: ['abc', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno']
     }
   },
 
@@ -185,8 +190,13 @@ export default {
     assessmentOptionClick(option) {
       this.overall_assessment = option;
     },
-     handleInputChange(text) {
+     handleSearchChange(text) {
         window.ipcRenderer.send("get-matching-cadets", text);
+        this.searchDropdownVisible = true;
+     },
+     handleSearchSelection(selection) {
+        this.searchDropdownVisible = false;
+        this.cadetId = selection;
      },
      createBlueCard(){
         let blueCardInfo =
@@ -218,20 +228,20 @@ import '../assets/styles/Sidebar.css';
 </script>
   
 <style scoped>
-  .main-container {
-      width: 100vw;
-      height: 100vh;
-      margin: 0 auto;
-      padding: 0;
-      display: flex;
-  }
-    
   /* https://stackoverflow.com/questions/70489057/dotted-background-with-pure-html-css */
   .dotted {
       background-image: radial-gradient(#191919 10%, transparent 10%),
       radial-gradient(#ccc 10%, transparent 10%);
       background-position: 0 0, 50px 50px;
       background-size: 50px 50px;
+  }
+
+  .main-container {
+      width: 100vw;
+      height: 100vh;
+      margin: 0 auto;
+      padding: 0;
+      display: flex;
   }
 
   .content-container {
@@ -311,6 +321,33 @@ import '../assets/styles/Sidebar.css';
 
   .form-group {
       margin: 0;
+  }
+
+  .search-cadet-row {
+    position: relative;
+  }
+
+  .search-cadet-dropdown {
+    width: 100%;
+    position: absolute;
+    overflow-y: auto;
+    max-height: 15vh;
+    top: 100%;
+    background-color: #1E1E1E;
+    color: white;
+    font-family: sans-serif;
+  }
+
+  .search-cadet-dropdown::selection {
+    background-color: #6EA171;
+  }
+
+  .search-cadet-dropdown:focus {
+    outline: none;
+  }
+
+  .search-cadet-dropdown:out-of-range {
+    display: hidden;
   }
 
   .form-group .bluecard-options {

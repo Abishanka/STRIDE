@@ -20,17 +20,28 @@
         <div class="cadet-menu-form">
           <div class="form-row">
             <div class="form-group">
-              <label for="cadet-menu" class="form-label">Leadership</label>
               <div class="cadetMenu-options" v-for="option in cadetMenuOptions" :key="option"
-              :class="{ 'cadetMenu-selected-option': option === cadetMenu_option }" @click="leaderOptionClick(option)">{{ option }}</div>
+              :class="{'cadetMenu-selected-option': option === cadetMenu_option }" @click="cadetMenuOptionClick(option)">{{ option }}</div>
             </div>
           </div>
         </div>
-        <div class="cadet-form">
+        <div v-if="cadetMenu_option === cadetMenuOptions[0]" class="cadet-form">
+          <div class="cadet-form">
+            <div class="import-cadets-parent">
+              <button class="import-cadets" @click="importCadets">Upload Cadet CSV</button>      
+            </div>
+          </div>
+        </div>
+        <div v-if="cadetMenu_option === cadetMenuOptions[1]" class="cadet-form">
+        </div>
+        <div v-if="cadetMenu_option === cadetMenuOptions[2]" class="cadet-form">
           <h1 class="cadet-form-heading">Cadet</h1>
           <div class="form-row">
             <label for="search-cadet" class="form-label">Search Cadet Name</label>
             <input type="text" id="search-cadet" v-model="searchText" @input="handleInputChange(searchText)" placeholder=" ">
+            <select id="search-cadet-dropdown" size="5" class="dropdown" v-if="dropdownVisible">
+              <option v-for="option in options" v-bind:value="option">{{ option }}</option>
+            </select>
           </div>
           <div class="form-row">
             <div class="form-group" style="width: 15vw;">
@@ -39,19 +50,20 @@
             </div>
             <div class="form-group" style="width: 40vw;">
               <label for="school" class="form-label">School</label>
-              <input type="text" id="school" v-model="school" placeholder=" " readonly>
+              <input type="text" id="school" v-model="school" placeholder=" ">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label for="first-name" class="form-label" style="width: 27.5vw;">First Name</label>
-              <input type="text" id="first-name" v-model="firstName" placeholder=" " readonly>
+              <input type="text" id="first-name" v-model="firstName" placeholder=" ">
             </div>
             <div class="form-group">
               <label for="last-name" class="form-label" style="width: 27.5vw;">Last Name</label>
-              <input type="text" id="last-name" v-model="lastName" placeholder=" " readonly>
+              <input type="text" id="last-name" v-model="lastName" placeholder=" ">
             </div>
           </div>
+          <button class="edit-cadet" @click="createBlueCard">Update Cadet Details</button>
         </div>
       </div>
     </div>
@@ -73,15 +85,19 @@ export default {
     return {
       goHome,
       sidebarOptions: computed(() => {
-      if (store.cadetProfileReturn == 'bluecards') {
-        return ['Blue Card'];
-      } else if (store.cadetProfileReturn == 'waterfall') {
-        return ['Waterfall'];
-      } else {
-        return [];
-      }
-    }),
-    cadetMenuOptions: ['Import cadets', 'Add a cadet', 'Edit a cadet']
+        if (store.cadetProfileReturn == 'bluecards') {
+          return ['Blue Card'];
+        } else if (store.cadetProfileReturn == 'waterfall') {
+          return ['Waterfall'];
+        } else {
+          return [];
+        }
+      }),
+      cadetMenuOptions: ['Import Cadets', 'Add New Cadet', 'Edit Cadet Details'],
+    }
+  }, data () {
+    return {
+      cadetMenu_option: 'Import Cadets'
     }
   },
   methods: {
@@ -100,6 +116,9 @@ export default {
           console.log('No option selected or option not recognized');
       }
     },
+    cadetMenuOptionClick(option) {
+      this.cadetMenu_option = option
+    }
   }
 }
 
@@ -132,7 +151,7 @@ import '../assets/styles/Sidebar.css';
     flex-grow: 1;
   }
 
-  .cadet-form .cadet-menu-form {
+  .cadet-form {
       position: relative;
       width: 60vw;
       padding-top: 2.5vh;
@@ -181,27 +200,67 @@ import '../assets/styles/Sidebar.css';
       margin: 0;
   }
 
-  .form-group .bluecard-options .cadetMenu-options {
-      color: white;
-      display: inline-block;
-      align-items: center;
-      justify-content: center;
-      background-color: #191919;
-      padding: 1vh;
-      width: 5.6vw;
-      border-color: transparent;
+  .cadetMenu-options {
+    color: white;
+    display: inline-block;
+    align-items: center;
+    justify-content: center;
+    background-color: #191919;
+    padding: 1vh;
+    width: 15vw;
+    border-color: transparent;
+    margin-top: 5vh;
+    text-align: center;
+    font-size: 1.5vw;
   }
 
-  .bluecard-options:hover {
-      background-color: #6EA171;
-      cursor: pointer;
+  .cadetMenu-options:hover {
+    background-color: #6EA171;
+    cursor: pointer;
   }
 
-  .bluecard-options:focus {
+  .cadetMenu-options:focus {
       outline: none;
   }
 
-  .bluecard-selected-option {
-      background-color: #4D784E !important;
+  .cadetMenu-selected-option {
+    background-color: #4D784E !important;
   }
+
+  .import-cadets-parent {
+    justify-self: center;
+    width: 100%;
+  }
+
+  .import-cadets {
+      width: 25%;
+      padding: 2vh 2vh;
+      margin: 2vh 0;
+      border-radius: 5px;
+      border: none;
+      background-color: #4D784E;
+      color: white;
+      cursor: pointer;
+      font-size: 1vw;
+  }
+
+  .import-cadets:hover {
+      background-color: #6EA171;
+  }
+
+  .edit-cadet {
+    width: 100%;
+    padding: 2vh 2vh;
+    margin: 2vh 0;
+    border-radius: 5px;
+    border: none;
+    background-color: #4D784E;
+    color: white;
+    cursor: pointer;
+  }
+
+  .edit-cadet:hover {
+      background-color: #6EA171;
+  }
+  
 </style>

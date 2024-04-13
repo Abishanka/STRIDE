@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container dotted d-flex justify-content-center">
+  <div class="main-container dotted">
     <div class="sidebar container" style="margin-left: 0; margin-right: 0;">
       <div class="d-flex align-items-center">
         <div class="logo">
@@ -18,7 +18,7 @@
         Return to Home
       </div>
     </div>
-    <div class="content-container text-center d-flex flex-column align-items-center">
+    <div class="content-container">
       <!-- First School Selection Dropdown, Submit Button, and Charts -->
       <div class="comparison-container d-flex justify-content-between" style="width: 100%;">
         <div v-if="showSchoolsDropdown" class="dropdown-submit-container d-flex flex-column align-items-center" style="margin-top: 10px; width: 20vw;">
@@ -222,6 +222,13 @@ export default {
 }
 </script>
 <style scoped>
+  .main-container {
+      width: 100vw;
+      height: 100vh;
+      margin: 0 auto;
+      padding: 0;
+      display: flex;
+  }
 .analysis-view {
   color: white;
   padding: 20px;
