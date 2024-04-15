@@ -317,7 +317,7 @@ function getUniqueSchools(event) {
 
 function getOverallAssessmentBySchool(event, school) {
   // SELECT overall_assessment, count(*) FROM
-  // (SELECT overall_assessment FROM BlueCards WHERE school = "MNO School") 
+  // (SELECT overall_assessment FROM BlueCards WHERE school = "MNO School")
   const sql = `
     SELECT overall_assessment, count(*) as count FROM
     (SELECT overall_assessment FROM BlueCards WHERE school = ?) 
@@ -326,7 +326,10 @@ function getOverallAssessmentBySchool(event, school) {
 
   db.all(sql, [school], (err, rows) => {
     if (err) {
-      console.error("Error fetching overall assessment data by school:", err.message);
+      console.error(
+        "Error fetching overall assessment data by school:",
+        err.message
+      );
     } else {
       event.sender.send("overall-assessment-by-school-data", rows);
     }
@@ -439,8 +442,8 @@ ipcMain.on("get-improve-by-school", (event, args) => {
 
 //example use:  updateCadetProfile({ first_name: "newName", school: "newSchool" }, 2);
 ipcMain.on("edit-cadet-profile", (event, args) => {
-  newValues = args.newValues; //update when frontend implemented to send
-  cadetId = args.id; //update when frontend implemented to send
+  newValues = args.newValues.changes;
+  cadetId = args.id;
   updateCadetProfile(event, newValues, cadetId);
 });
 
@@ -490,4 +493,3 @@ ipcMain.on("get-matching-cadets", (event, args) => {
 ipcMain.on("get-analysis-results", (event, args) => {
   //analysis logic
 });
-

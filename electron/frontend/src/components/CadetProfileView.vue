@@ -39,8 +39,8 @@
           <div class="form-row">
             <label for="search-cadet" class="form-label">Search Cadet Name</label>
             <input type="text" id="search-cadet" v-model="searchText" @input="handleInputChange(searchText)" placeholder=" ">
-            <select id="search-cadet-dropdown" size="5" class="dropdown" v-if="dropdownVisible">
-              <option v-for="option in options" v-bind:value="option">{{ option }}</option>
+            <select id="search-cadet-dropdown" size="5" class="dropdown" v-if="dropdownVisible" @change="handleSearchSelection($event.target.value)">
+              <option v-for="(option, index) in searchOptions" v-bind:value="index" v-bind:key="option">{{ option }}</option>
             </select>
           </div>
           <div class="form-row">
@@ -50,20 +50,20 @@
             </div>
             <div class="form-group" style="width: 40vw;">
               <label for="school" class="form-label">School</label>
-              <input type="text" id="school" v-model="school" placeholder=" ">
+              <input type="text" id="school" v-model="school" placeholder=" " @input="handleSchoolChange(school)">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label for="first-name" class="form-label" style="width: 27.5vw;">First Name</label>
-              <input type="text" id="first-name" v-model="firstName" placeholder=" ">
+              <input type="text" id="first-name" v-model="firstName" placeholder=" " @input="handleFirstChange(firstName)">
             </div>
             <div class="form-group">
               <label for="last-name" class="form-label" style="width: 27.5vw;">Last Name</label>
-              <input type="text" id="last-name" v-model="lastName" placeholder=" ">
+              <input type="text" id="last-name" v-model="lastName" placeholder=" " @input="handleLastChange(lastName)">
             </div>
           </div>
-          <button class="edit-cadet" @click="createBlueCard">Update Cadet Details</button>
+          <button class="edit-cadet" @click="submitChanges">Update Cadet Details</button>
         </div>
       </div>
     </div>
@@ -97,9 +97,28 @@ export default {
     }
   }, data () {
     return {
-      cadetMenu_option: 'Import Cadets'
+      cadetMenu_option: 'Import Cadets',
+      firstName: '',
+      lastName: '',
+      cadetId: '',
+      school: '',
+      dropdownVisible: false,
+      availableCadets: [],
+      searchOptions: [],
+      firstNameEdit: null,
+      lastNameEdit: null,
+      schoolEdit: null,
     }
   },
+   mounted() {
+    window.ipcRenderer.receive('matching-cadets', (event, data) => {
+      this.searchOptions = data.map(cadet => `${cadet.first_name} ${cadet.last_name}`);
+      this.availableCadets = data;
+    }),
+    window.ipcRenderer.receive('profile-update-status', (event, data) => {
+      //if successful data will be: "success". If there's an error data: err.message
+      console.log(data);
+    })},
   methods: {
     sidebarOptionClick(option) {
       switch (option) {
@@ -118,6 +137,40 @@ export default {
     },
     cadetMenuOptionClick(option) {
       this.cadetMenu_option = option
+    },
+    handleInputChange(text) {
+      window.ipcRenderer.send("get-matching-cadets", text);
+      this.dropdownVisible = true;
+     },
+     handleSchoolChange(text) {
+      this.schoolEdit = text;
+     },
+     handleFirstChange(text) {
+      this.firstNameEdit = text;
+     },
+     handleLastChange(text) {
+      this.lastNameEdit = text;
+     },
+     handleSearchSelection(selection) {
+        this.dropdownVisible = false;
+        this.cadetId = this.availableCadets[selection].uid;
+        this.firstName = this.availableCadets[selection].first_name;
+        this.lastName = this.availableCadets[selection].last_name;
+        this.school = this.availableCadets[selection].school;
+     },
+    submitChanges(){
+      //collect fields/values to change and send
+      let changes = {};
+      if(this.firstNameEdit != null){
+        changes["first_name"] = this.firstNameEdit;
+      }
+      if(this.lastNameEdit != null){
+        changes["last_name"] = this.lastNameEdit;
+      }
+      if(this.schoolEdit != null){
+        changes["school"] = this.schoolEdit;
+      }
+      window.ipcRenderer.send("edit-cadet-profile", {newValues: {changes}, id: this.cadetId});
     }
   }
 }
