@@ -25,7 +25,7 @@
           <label for="search-cadet" class="form-label">Search Cadet Name</label>
           <input type="text" id="search-cadet" v-model="searchText" @input="handleSearchChange(searchText)" placeholder=" ">
           <select size="5" class="search-cadet-dropdown" v-if="searchDropdownVisible" @change="handleSearchSelection($event.target.value)">
-              <option v-for="option in searchOptions" v-bind:value="option" v-bind:key="option">{{ option }}</option>
+              <option v-for="(option, index) in searchOptions" v-bind:value="index" v-bind:key="option">{{ option }}</option>
           </select>
         </div>
         <div class="form-row">
@@ -157,6 +157,7 @@ export default {
       improve: [null, null, null],
       overall_assessment: null,
       bluecard_date: new Date().toISOString().substr(0, 10),
+      availableCadets: [],
       searchDropdownVisible: false,
       searchOptions: ['abc', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno']
     }
@@ -164,7 +165,8 @@ export default {
 
   mounted() {
     window.ipcRenderer.receive('matching-cadets', (event, data) => {
-      console.log(data);
+      this.searchOptions = data.map(cadet => `${cadet.first_name} ${cadet.last_name}`);
+      this.availableCadets = data;
     }),
     window.ipcRenderer.receive('submission-status', (event, data) =>{
       //if successful data will be: "success". If there's an error data: err.message
@@ -196,7 +198,11 @@ export default {
      },
      handleSearchSelection(selection) {
         this.searchDropdownVisible = false;
-        this.cadetId = selection;
+        console.log(this.availableCadets[selection]);
+        this.cadetId = this.availableCadets[selection].uid;
+        this.firstName = this.availableCadets[selection].first_name;
+        this.lastName = this.availableCadets[selection].last_name;
+        this.school = this.availableCadets[selection].school;
      },
      createBlueCard(){
         let blueCardInfo =
