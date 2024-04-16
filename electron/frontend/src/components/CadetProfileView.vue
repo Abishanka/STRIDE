@@ -118,6 +118,10 @@ export default {
     window.ipcRenderer.receive('profile-update-status', (event, data) => {
       //if successful data will be: "success". If there's an error data: err.message
       console.log(data);
+    }),
+    window.ipcRenderer.receive('add-cadet-status', (event, data) => {
+      //if successful data will be: "success". If there's an error data: err.message
+      console.log(data);
     })},
   methods: {
     sidebarOptionClick(option) {
@@ -171,6 +175,9 @@ export default {
         changes["school"] = this.schoolEdit;
       }
       window.ipcRenderer.send("edit-cadet-profile", {newValues: {changes}, id: this.cadetId});
+    },
+    submitSingleCadet(data){
+      window.ipcRenderer.send("add-cadet", data);
     }
   }
 }

@@ -303,7 +303,7 @@ function addCadet(event, data) {
       event.sender.send("submission-status", err.message);
       console.error("Error inserting row:", err.message);
     } else {
-      event.sender.send("submission-status", "success");
+      event.sender.send("add-cadet-status", "success");
       console.log(`Row inserted with ID: ${this.lastID}`);
     }
   });
