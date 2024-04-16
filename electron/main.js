@@ -276,7 +276,7 @@ function insertCadetProfiles(event, cadetDataList) {
   const placeholders = cadetDataList.map(() => "(?, ?, ?)").join(", ");
   const values = cadetDataList.flatMap((cadet) => Object.values(cadet));
 
-  const sql = `INSERT INTO CadetProfile (cadet, first_name, last_name, photo, gender, program, ms_level, ftx_co, school) VALUES ${placeholders}`;
+  const sql = `INSERT INTO CadetProfile (first_name, last_name, school) VALUES ${placeholders}`;
 
   db.run(sql, values, function (err) {
     if (err) {
@@ -440,47 +440,17 @@ ipcMain.on("get-improve-by-school", (event, args) => {
   getImproveBySchool(event, args);
 });
 
-//example use:  updateCadetProfile({ first_name: "newName", school: "newSchool" }, 2);
 ipcMain.on("edit-cadet-profile", (event, args) => {
   newValues = args.newValues.changes;
   cadetId = args.id;
   updateCadetProfile(event, newValues, cadetId);
 });
 
-/*Example use:
-const blueCardData = {
-  cid: 1,
-  uid: 1,
-  event: 'Event Name',
-  leadership_pos: 'Leadership Position',
-  // Add other fields and values
-};
-insertBlueCard(blueCardData);
-*/
 ipcMain.on("upload-blue-card", (event, args) => {
   console.log(args);
   insertBlueCard(event, args);
 });
 
-/*Example use:
-  const cadetDataList = [
-    {
-      uid: 4,
-      cadet: "Cadet 1",
-      first_name: "John",
-      last_name: "Doe",
-      photo: "",
-      gender: "Male",
-      program: "Program 1",
-      ms_level: "MS Level 1",
-      ftx_co: "FTX CO 1",
-      school: "School 2",
-    },
-    // Add more cadet data objects as needed
-  ];
-
-  insertCadetProfiles(cadetDataList);
-  */
 ipcMain.on("upload-cadet-profiles", (event, args) => {
   cadetData = args; //update as needed
   insertCadetProfiles(event, cadetData);
