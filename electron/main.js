@@ -289,6 +289,26 @@ function insertCadetProfiles(event, cadetDataList) {
   });
 }
 
+function addCadet(event, data) {
+  const columns = Object.keys(data).join(", ");
+  const placeholders = Object.keys(data)
+    .map(() => "?")
+    .join(", ");
+  const values = Object.values(blueCardData);
+
+  const sql = `INSERT INTO CadetProfile (${columns}) VALUES (${placeholders})`;
+
+  db.run(sql, values, function (err) {
+    if (err) {
+      event.sender.send("submission-status", err.message);
+      console.error("Error inserting row:", err.message);
+    } else {
+      event.sender.send("submission-status", "success");
+      console.log(`Row inserted with ID: ${this.lastID}`);
+    }
+  });
+}
+
 function getMatchingCadets(event, name) {
   db.all(
     "SELECT * FROM CadetProfile WHERE first_name || ' ' || last_name LIKE ? || '%'",
@@ -458,6 +478,10 @@ ipcMain.on("upload-cadet-profiles", (event, args) => {
 
 ipcMain.on("get-matching-cadets", (event, args) => {
   getMatchingCadets(event, args);
+});
+
+ipcMain.on("add-cadet", (event, args) => {
+  addCadet(args);
 });
 
 ipcMain.on("get-analysis-results", (event, args) => {
