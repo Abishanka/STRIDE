@@ -120,7 +120,7 @@ export default {
       window.ipcRenderer.receive('unique-schools', (event, schools) => {
         uniqueSchools.value = schools.map(school => school.school);
       });
-      window.ipcRenderer.receive('overall-assessment-by-school-data', (event, data) => {
+      window.ipcRenderer.receive('overall-assessment-data', (event, data) => {
         console.log(curSelection);
         if(curSelection==1)
         {
@@ -135,7 +135,7 @@ export default {
           overallAssessmentChart2.value = createChart('overall-assessment-chart2', 'Overall Assessment', overallAssessmentData2.value);
         }
       });
-      window.ipcRenderer.receive('sustain-by-school-data', (event, data) => {
+      window.ipcRenderer.receive('sustain-data', (event, data) => {
         if(curSelection==1)
         {
           sustainData.value = data.map(item => ({ label: item.sustain, value: item.count }));
@@ -149,7 +149,7 @@ export default {
           sustainChart2.value = createChart('sustain-chart2', 'Sustain', sustainData2.value);          
         }
       });
-      window.ipcRenderer.receive('improve-by-school-data', (event, data) => {
+      window.ipcRenderer.receive('improve-data', (event, data) => {
         if(curSelection==1)
         {
           improveData.value = data.map(item => ({ label: item.improve, value: item.count }));

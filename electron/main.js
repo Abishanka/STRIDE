@@ -351,7 +351,7 @@ function getOverallAssessmentBySchool(event, school) {
         err.message
       );
     } else {
-      event.sender.send("overall-assessment-by-school-data", rows);
+      event.sender.send("overall-assessment-data", rows);
     }
   });
 }
@@ -380,7 +380,7 @@ function getSustainBySchool(event, school) {
     if (err) {
       console.error("Error fetching sustain data by school:", err.message);
     } else {
-      event.sender.send("sustain-by-school-data", rows);
+      event.sender.send("sustain-data", rows);
     }
   });
 }
@@ -402,10 +402,86 @@ function getImproveBySchool(event, school) {
     if (err) {
       console.error("Error fetching improve data by school:", err.message);
     } else {
-      event.sender.send("improve-by-school-data", rows);
+      event.sender.send("improve-data", rows);
     }
   });
 }
+
+/////////////////////////////////////////////////////////////////////////// For Cadet
+
+function getOverallAssessmentByCadet(event, cadetId) {
+  // SELECT overall_assessment, count(*) FROM
+  // (SELECT overall_assessment FROM BlueCards WHERE school = "MNO School")
+  const sql = `
+    SELECT overall_assessment, count(*) as count FROM
+    (SELECT overall_assessment FROM BlueCards WHERE uid = ?) 
+    GROUP BY overall_assessment
+  `;
+
+  db.all(sql, [cadetId], (err, rows) => {
+    if (err) {
+      console.error(
+        "Error fetching overall assessment data by school:",
+        err.message
+      );
+    } else {
+      event.sender.send("overall-assessment-by-cadet-data", rows);
+    }
+  });
+}
+
+function getSustainByCadet(event, cadetId) {
+  // SELECT sustain, count(*) from
+  // (SELECT sustain1 AS sustain FROM BlueCards WHERE school = "ABC High School"
+  // UNION ALL
+  // SELECT sustain2 AS sustain FROM BlueCards WHERE school = "ABC High School"
+  // UNION ALL
+  // SELECT sustain3 AS sustain FROM BlueCards WHERE school = "ABC High School")
+  // GROUP BY sustain
+  const sql = `
+    SELECT sustain, count(*) as count FROM
+    (
+      SELECT sustain1 AS sustain FROM BlueCards WHERE uid = ?
+      UNION ALL
+      SELECT sustain2 AS sustain FROM BlueCards WHERE uid = ?
+      UNION ALL
+      SELECT sustain3 AS sustain FROM BlueCards WHERE uid = ?
+    )
+    GROUP BY sustain
+  `;
+
+  db.all(sql, [cadetId, cadetId, cadetId], (err, rows) => {
+    if (err) {
+      console.error("Error fetching sustain data by cadet:", err.message);
+    } else {
+      event.sender.send("sustain-data", rows);
+    }
+  });
+}
+
+function getImproveByCadet(event, cadetId) {
+  const sql = `
+    SELECT improve, count(*) as count FROM
+    (
+      SELECT improve1 AS improve FROM BlueCards WHERE uid = ?
+      UNION ALL
+      SELECT improve2 AS improve FROM BlueCards WHERE uid = ?
+      UNION ALL
+      SELECT improve3 AS improve FROM BlueCards WHERE uid = ?
+    )
+    GROUP BY improve
+  `;
+
+  db.all(sql, [cadetId, cadetId, cadetId], (err, rows) => {
+    if (err) {
+      console.error("Error fetching improve data by cadet:", err.message);
+    } else {
+      event.sender.send("improve-data", rows);
+    }
+  });
+}
+
+/////////////////////////////////////////////////////////////////////////// For Cadet
 
 app.whenReady().then(createWindow);
 
@@ -458,6 +534,19 @@ ipcMain.on("get-sustain-by-school", (event, args) => {
 ipcMain.on("get-improve-by-school", (event, args) => {
   console.log(args);
   getImproveBySchool(event, args);
+});
+ipcMain.on("get-overall-assessment-by-cadet", (event, args) => {
+  getOverallAssessmentByCadet(event, args);
+});
+
+ipcMain.on("get-sustain-by-cadet", (event, args) => {
+  console.log(args);
+  getSustainByCadet(event, args);
+});
+
+ipcMain.on("get-improve-by-cadet", (event, args) => {
+  console.log(args);
+  getImproveByCadet(event, args);
 });
 
 ipcMain.on("edit-cadet-profile", (event, args) => {
