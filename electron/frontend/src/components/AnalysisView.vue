@@ -54,6 +54,23 @@
             <canvas id="improve-chart2"></canvas>
           </div>
         </div>
+        <!-- Cadet Selection Dropdown -->
+        <div v-if="showCadetsDropdown" class="dropdown-submit-container d-flex flex-column align-items-center" style="margin-top: 10px; width: 20vw;">
+          <select v-model="selectedCadet" class="styled-dropdown" style="width: 100%; min-width: 250px;">
+            <option disabled value="">Please select a cadet</option>
+            <option v-for="cadet in uniqueCadets" :key="cadet" :value="cadet[0]">{{ cadet[1] + ", " + cadet[2] }}</option>
+          </select>
+          <button @click="viewCadetProfile" class="submit-button mt-2">View Cadet Profile</button>
+          <div class="chart-container" style="margin-top: 20px; max-width: 100%;">
+            <canvas id="overall-assessment-cadet-chart"></canvas>
+          </div>
+          <div class="chart-container" style="margin-top: 20px; max-width: 100%;">
+            <canvas id="sustain-cadet-chart"></canvas>
+          </div>
+          <div class="chart-container" style="margin-top: 20px; max-width: 100%;">
+            <canvas id="improve-cadet-chart"></canvas>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -87,13 +104,31 @@ export default {
     let improveChart2 = ref(null);
     let curSelection = 1;
 
+    const showCadetsDropdown = ref(false);
+    const uniqueCadets = ref([]);
+    const selectedCadet = ref('');
+    
+    let overallAssessmentCadetData = ref(null);
+    let improveCadetData = ref(null);
+    let sustainCadetData = ref(null);
+    
+
+    const cadetChartData = ref(null);
+    let overallAssessmentCadetChart = ref(null);
+    let improveCadetChart = ref(null);
+    let sustainCadetChart = ref(null);
+
     function goHome() {
       router.push('/');
     }
     function handleOptionClick(option) {
+      console.log(option);
       if (option === 'Blue Card') {
         window.ipcRenderer.send("get-unique-schools");
         showSchoolsDropdown.value = !showSchoolsDropdown.value; // Toggle visibility
+      } else if (option === 'Cadet Profile') {
+        window.ipcRenderer.send("get-unique-cadets");
+        showCadetsDropdown.value = !showCadetsDropdown.value; // Toggle visibility
       } else {
         console.log(option + ' clicked');
       }
@@ -116,9 +151,42 @@ export default {
         window.ipcRenderer.send("get-improve-by-school", selectedSchool2.value);
       }
     }
+    function viewCadetProfile() {
+      console.log("HERE WE GO");
+      if (selectedCadet.value) {
+        // Request new data for the selected cadet
+        console.log("CALLING");
+        window.ipcRenderer.send("get-overall-assessment-by-cadet", selectedCadet.value);
+        window.ipcRenderer.send("get-sustain-by-cadet", selectedCadet.value);
+        window.ipcRenderer.send("get-improve-by-cadet", selectedCadet.value);
+      }
+    }
     onMounted(() => {
       window.ipcRenderer.receive('unique-schools', (event, schools) => {
         uniqueSchools.value = schools.map(school => school.school);
+      });
+      window.ipcRenderer.receive('unique-cadets', (event, cadets) => {
+        uniqueCadets.value = cadets.map(cadet => [cadet.uid, cadet.last_name, cadet.first_name]);
+      });
+      window.ipcRenderer.receive('overall-assessment-cadet-data', (event, data) => {
+        console.log("WE READ YOU LOUD AND CLEAR");
+        console.log(data);
+        overallAssessmentCadetData = data.map(item => ({ label: item.overall_assessment, value: item.count }));
+        console.log(overallAssessmentCadetChart);
+        if (overallAssessmentCadetChart.value) overallAssessmentCadetChart.value.destroy();
+        overallAssessmentCadetChart.value = createChart('overall-assessment-cadet-chart', 'Cadet Overall Assessment', overallAssessmentCadetData);
+      });
+      window.ipcRenderer.receive('sustain-cadet-data', (event, data) => {
+        console.log("WOOP");
+        console.log(data);
+        sustainCadetData = data.map(item => ({ label: item.sustain, value: item.count }));
+        if (sustainCadetChart.value) sustainCadetChart.value.destroy();
+        sustainCadetChart.value = createChart('sustain-cadet-chart', 'Cadet Sustain', sustainCadetData);
+      });
+      window.ipcRenderer.receive('improve-cadet-data', (event, data) => {
+        improveCadetData = data.map(item => ({ label: item.improve, value: item.count }));
+        if (improveCadetChart.value) improveCadetChart.value.destroy();
+        improveCadetChart.value = createChart('improve-cadet-chart', 'Cadet Improve', improveCadetData);
       });
       window.ipcRenderer.receive('overall-assessment-data', (event, data) => {
         console.log(curSelection);
@@ -167,6 +235,7 @@ export default {
     });
 
     function createChart(chartId, label, data) {
+      console.log(chartId);
       const ctx = document.getElementById(chartId).getContext('2d');
       return new Chart(ctx, {
         type: 'bar',
@@ -209,11 +278,16 @@ export default {
       handleOptionClick,
       submitSchoolSelection,
       submitSchoolSelection2,
+      viewCadetProfile,
       sidebarOptions: ['Blue Card', 'Cadet Profile', 'Export'],
       showSchoolsDropdown,
+      showCadetsDropdown,
       uniqueSchools,
+      uniqueCadets,
       selectedSchool,
       selectedSchool2,
+      selectedCadet,
+      cadetChartData,
       overallAssessmentData,
       sustainData,
       improveData

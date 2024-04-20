@@ -409,6 +409,18 @@ function getImproveBySchool(event, school) {
 
 /////////////////////////////////////////////////////////////////////////// For Cadet
 
+function getUniqueCadets(event) {
+  // SELECT DISTINCT school FROM CadetProfile
+  const sql = "SELECT DISTINCT uid, first_name, last_name FROM CadetProfile ORDER BY last_name";
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      console.error("Error fetching unique schools:", err.message);
+    } else {
+      event.sender.send("unique-cadets", rows);
+    }
+  });
+}
+
 function getOverallAssessmentByCadet(event, cadetId) {
   // SELECT overall_assessment, count(*) FROM
   // (SELECT overall_assessment FROM BlueCards WHERE school = "MNO School")
@@ -417,6 +429,7 @@ function getOverallAssessmentByCadet(event, cadetId) {
     (SELECT overall_assessment FROM BlueCards WHERE uid = ?) 
     GROUP BY overall_assessment
   `;
+  console.log("WE READ " + cadetId);
 
   db.all(sql, [cadetId], (err, rows) => {
     if (err) {
@@ -425,7 +438,9 @@ function getOverallAssessmentByCadet(event, cadetId) {
         err.message
       );
     } else {
-      event.sender.send("overall-assessment-by-cadet-data", rows);
+      console.log("SENT OVERALL ASSESSMENT CADET DATA");
+      console.log(rows);
+      event.sender.send("overall-assessment-cadet-data", rows);
     }
   });
 }
@@ -454,7 +469,7 @@ function getSustainByCadet(event, cadetId) {
     if (err) {
       console.error("Error fetching sustain data by cadet:", err.message);
     } else {
-      event.sender.send("sustain-data", rows);
+      event.sender.send("sustain-cadet-data", rows);
     }
   });
 }
@@ -476,7 +491,7 @@ function getImproveByCadet(event, cadetId) {
     if (err) {
       console.error("Error fetching improve data by cadet:", err.message);
     } else {
-      event.sender.send("improve-data", rows);
+      event.sender.send("improve-cadet-data", rows);
     }
   });
 }
@@ -535,6 +550,11 @@ ipcMain.on("get-improve-by-school", (event, args) => {
   console.log(args);
   getImproveBySchool(event, args);
 });
+
+ipcMain.on("get-unique-cadets", (event) => {
+  getUniqueCadets(event);
+});
+
 ipcMain.on("get-overall-assessment-by-cadet", (event, args) => {
   getOverallAssessmentByCadet(event, args);
 });
