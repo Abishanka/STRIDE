@@ -17,7 +17,7 @@ def generate_random_data():
 
     uid = random.randint(1, 40)
     school = random.choice(["ABC School", "MNO School", "PQR School", "XYZ School"])
-    leadership_pos = "DEF"  # This remains constant as per instructions
+    leadership_pos = random.choice(["PL", "SL", "PSG"]) # This remains constant as per instructions
     options = ["AV", "RS", "LD", "PS", "DP", "SJ", "BT", "PSG", "CP", "MA"]
     sustain1 = random.choice(options)
     sustain2 = random.choice(options)
