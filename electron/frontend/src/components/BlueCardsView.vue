@@ -1,5 +1,13 @@
 <template>
   <div class="main-container dotted">
+    <div class="modal-backdrop" v-if="showSuccessModal" @click="hideSuccessModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <button class="close-button" @click="hideSuccessModal">&times;</button>
+          <h2>{{modalText}}</h2>
+        </div>
+        </div>
+    </div>
     <div class="sidebar container" style="margin-left: 0; margin-right: 0;">
       <div class="d-flex align-items-center">
         <div class="logo">
@@ -159,6 +167,7 @@ export default {
       bluecard_date: new Date().toISOString().substr(0, 10),
       availableCadets: [],
       searchDropdownVisible: false,
+      showSuccessModal: false,
       searchOptions: ['abc', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno']
     }
   },
@@ -171,6 +180,14 @@ export default {
     window.ipcRenderer.receive('submission-status', (event, data) =>{
       //if successful data will be: "success". If there's an error data: err.message
       console.log(data);
+      if(data == "success"){
+        this.showSuccessModal = true;
+        this.modalText = 'Blue card submitted successfully!'
+      }
+      else{
+        this.showSuccessModal = true;
+        this.modalText = 'Error submitting blue card. Review your input.';
+      }
     })
   }, 
   methods: {
@@ -226,6 +243,9 @@ export default {
         }
         window.ipcRenderer.send("upload-blue-card", blueCardInfo);
       },
+      hideSuccessModal() {
+      this.showSuccessModal = false;
+    },
   }
 }
 
@@ -407,5 +427,33 @@ import '../assets/styles/Sidebar.css';
       border-width: 1px;
       color: #BBE0E3;
   }
+
+   /* Modal Backdrop & Content */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #1E1E1E; /* Match the dark theme background */
+  color: #BBE0E3; /* Use the light teal for text */
+  padding: 20px;
+  border-radius: 5px;
+  width: 70%; /* Make modal wider */
+  max-height: 80%;
+  overflow-y: auto;
+  border: 1px solid #BBE0E3; /* Border color matched with the form styling */
+}
+
+.modal-header, .close-button {
+  color: #BBE0E3;
+}
 </style>
   
