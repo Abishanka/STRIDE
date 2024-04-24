@@ -251,6 +251,22 @@ export default {
           this.showSuccessModal = true;
           this.modalText = "No cadet selected.";
         }
+        else if(blueCardInfo.eventName == null){
+          this.showSuccessModal = true;
+          this.modalText = "Enter an event name.";
+        }
+        else if(blueCardInfo.overall_assessment == null){
+          this.showSuccessModal = true;
+          this.modalText = "Enter an overall assessment.";
+        }
+        else if(blueCardInfo.bluecard_date == null){
+          this.showSuccessModal = true;
+          this.modalText = "Enter a date.";
+        }
+        else if(blueCardInfo.leadership_pos == null){
+          this.showSuccessModal = true;
+          this.modalText = "Enter a leadership position.";
+        }
         else{
             window.ipcRenderer.send("upload-blue-card", blueCardInfo);
         }
