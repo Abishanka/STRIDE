@@ -168,6 +168,7 @@ export default {
       availableCadets: [],
       searchDropdownVisible: false,
       showSuccessModal: false,
+      allBluecardInfo:[],
       searchOptions: ['abc', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno', 'def', 'lmno']
     }
   },
@@ -188,6 +189,10 @@ export default {
         this.showSuccessModal = true;
         this.modalText = 'Error submitting blue card. Review your input.';
       }
+    }),
+    window.ipcRenderer.receive('all-bluecards', (event, data) => {
+      this.allBluecardInfo = data;
+      this.exportBluecards();
     })
   }, 
   methods: {
@@ -197,7 +202,7 @@ export default {
           this.$router.push('/cadetprofile');
           break;
         case 'Export':
-          //Export the bluecards
+          window.ipcRenderer.send("export-bluecards");
           break;
         default:
           console.log('No option selected or option not recognized');
@@ -243,9 +248,32 @@ export default {
         }
         window.ipcRenderer.send("upload-blue-card", blueCardInfo);
       },
-      hideSuccessModal() {
+    hideSuccessModal() {
       this.showSuccessModal = false;
     },
+    exportBluecards(){
+     const reversedHeader = Object.keys(this.allBluecardInfo[0]).slice(2).reverse();
+      const reversedRows = this.allBluecardInfo.slice().reverse(); // Make a copy of the array and reverse it
+
+      const headerString = reversedHeader.join(',');
+      const replacer = (key, value) => value ?? '';
+
+      const rowItems = reversedRows.map((row) =>
+        reversedHeader
+          .map((fieldName) => JSON.stringify(row[fieldName], replacer))
+          .join(',')
+      );
+
+      // join header and body, and break into separate lines
+      const csv = [headerString, ...rowItems].join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', "bluecards.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   }
 }
 
