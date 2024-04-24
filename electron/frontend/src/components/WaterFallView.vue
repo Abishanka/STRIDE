@@ -107,7 +107,7 @@ export default {
 
     const tableData = ref([]);
     const tableHeaders = ref([]);
-
+    const csvData = ref([]);
     const modalVisible = ref(false);
     const selectedDay = ref(0); // Initialize to day 0
     const days = ref([]);
@@ -219,8 +219,7 @@ export default {
           });
         });
       });
-
-      downloadCsv(csvContent, "test.csv");
+      this.csvData = csvContent;
       parseCsvToObjects(csvContent);
     }
 
@@ -280,9 +279,10 @@ export default {
         cadetsPerSquad: '',
       },
       convertToCsv,
+      downloadCsv,
       tableData,
       tableHeaders,
-
+      csvData,
       modalVisible,
       selectedDay,
       days,
@@ -306,7 +306,10 @@ export default {
           this.$router.push('/cadetprofile');
           break;
         case 'Export':
-          // Export the Waterfall logic here
+          console.log(this.csvData);
+          if(this.csvData.length != 0 ){
+            this.exportWaterfall();
+          }
           break;
         default:
           console.log('No option selected or option not recognized');
@@ -342,6 +345,10 @@ export default {
       }
       return null;
     },
+    exportWaterfall(){
+      console.log(this.csvData)
+      this.downloadCsv(this.csvData, "leadership.csv");
+    }
   },  
 }
 
