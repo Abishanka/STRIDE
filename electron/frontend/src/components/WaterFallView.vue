@@ -316,9 +316,11 @@ export default {
       }
     },
     generateWaterfall() {
-      console.log('Generating waterfall with criteria:', this.waterfallCriteria);
-      window.ipcRenderer.send("get-waterfall-data", this.waterfallCriteria);
-      this.modalVisible = true; // Show modal after data is prepared
+      if(this.waterfallCriteria.ftxLength != '' && this.waterfallCriteria.missionsPerDay != '' && this.waterfallCriteria.cadetsPerPlatoon != '' 
+      && this.waterfallCriteria.cadetsPerSquad !=  ''){
+        window.ipcRenderer.send("get-waterfall-data", this.waterfallCriteria);
+        this.modalVisible = true; // Show modal after data is prepared
+      }
     },
     prepareModalData(data) {
       // This method would organize the data into a structure that can be easily iterated over in the template.
