@@ -246,7 +246,15 @@ export default {
           overall_assessment:this.overall_assessment,
           bluecard_date: this.bluecard_date
         }
-        window.ipcRenderer.send("upload-blue-card", blueCardInfo);
+
+        if(blueCardInfo.uid == null){
+          this.showSuccessModal = true;
+          this.modalText = "No cadet selected.";
+        }
+        else{
+            window.ipcRenderer.send("upload-blue-card", blueCardInfo);
+        }
+        
       },
     hideSuccessModal() {
       this.showSuccessModal = false;
