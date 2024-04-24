@@ -58,8 +58,8 @@
     </div>
     <div class="content-container">
       <div class="waterfall-criteria-container">
+        <h2 class="waterfall-heading">Waterfall Criteria</h2>
         <div class="waterfall-criteria">
-          <h2 class="waterfall-heading">Waterfall Criteria</h2>
           <div class="criteria-row">
             <div class="criteria-input">
               <label for="ftx-length">FTX Length (in days)</label>
@@ -85,7 +85,7 @@
         </div>
       </div>
       <div class="output-container">
-        <button v-if="tableData.length > 0" class="generate-button" @click="modalVisible = true">Reopen Schedule Modal</button>
+        <button v-if="tableData.length > 0" class="output-model-button" @click="modalVisible = true">Reopen Schedule Modal</button>
         <p v-else>Awaiting input parameters...</p>
       </div>
     </div>
@@ -378,7 +378,7 @@ import '../assets/styles/Sidebar.css';
   position: relative;
   width: 40vw;
   /* Fixed width */
-  padding-top: 2.5vh;
+  padding-top: 1vw;
   /* Space for the title line */
 }
 
@@ -398,6 +398,7 @@ import '../assets/styles/Sidebar.css';
   background-color: #1E1E1E;
   color: #6EA171;
   padding: 0 1vw;
+  font-size: 1.5vw;
 }
 
 .criteria-row {
@@ -416,9 +417,9 @@ import '../assets/styles/Sidebar.css';
 
 .criteria-input label {
   color: #D2D1D1;
-  font-family: Helvetica;
+  font-family: sans-serif;
   text-align: left;
-  display: block;
+  display: block;  
 }
 
 .criteria-input input {
@@ -439,7 +440,7 @@ import '../assets/styles/Sidebar.css';
 }
 
 .generate-button {
-  width: 100%;
+  width: 95%;
   /* Adjust width for consistent padding */
   padding: 2vh 2vh;
   /* Match input padding */
@@ -464,13 +465,9 @@ import '../assets/styles/Sidebar.css';
 }
 
 .output-container {
-  background-color: #333;
-  border: 1px solid #fff;
-  border-radius: 5px;
   color: #fff;
   padding: 20px;
-  width: calc(100% - 40px);
-  /* Full width minus padding, matching the criteria box */
+  width: 50%; 
   box-sizing: border-box;
   text-align: center;
   margin-top: 2vh;
@@ -509,7 +506,7 @@ import '../assets/styles/Sidebar.css';
 }
 
 /* Adjusting Button Styles to Match Form Buttons */
-button, .generate-button, .day-selector button, .close-button {
+button, .output-model-button, .day-selector button, .close-button {
   background-color: #BBE0E3; /* Light teal background */
   color: black; /* Text color */
   border: none;
@@ -519,7 +516,7 @@ button, .generate-button, .day-selector button, .close-button {
   transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
-button:hover, .generate-button:hover, .day-selector button:hover, .close-button:hover {
+button:hover, .output-model-button:hover, .day-selector button:hover, .close-button:hover {
   background-color: #4D784E; /* Darker shade for hover state, taken from your form styling */
 }
 
