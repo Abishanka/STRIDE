@@ -126,7 +126,6 @@ export default {
       if (option === 'Blue Card') {
         window.ipcRenderer.send("get-unique-schools");
         showSchoolsDropdown.value = !showSchoolsDropdown.value; // Toggle visibility
-      } else if (option === 'Cadet Profile') {
         window.ipcRenderer.send("get-unique-cadets");
         showCadetsDropdown.value = !showCadetsDropdown.value; // Toggle visibility
       } else {
@@ -279,7 +278,7 @@ export default {
       submitSchoolSelection,
       submitSchoolSelection2,
       viewCadetProfile,
-      sidebarOptions: ['Blue Card', 'Cadet Profile', 'Export'],
+      sidebarOptions: ['Blue Card', 'Export'],
       showSchoolsDropdown,
       showCadetsDropdown,
       uniqueSchools,
