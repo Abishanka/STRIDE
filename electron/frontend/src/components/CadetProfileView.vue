@@ -4,7 +4,7 @@
       <div class="modal-content" @click.stop>
         <div class="modal-header">
           <button class="close-button" @click="hideSuccessModal">&times;</button>
-          <h2>Changes submitted successfully!</h2>
+          <h2>{{modalText}}</h2>
         </div>
         </div>
         </div>
@@ -117,6 +117,7 @@ export default {
       lastNameEdit: null,
       schoolEdit: null,
       showSuccessModal: false,
+      modalText: 'Changes submitted successfully!'
     }
   },
    mounted() {
@@ -129,6 +130,11 @@ export default {
       console.log(data);
       if(data == "success"){
         this.showSuccessModal = true;
+        this.modalText = 'Changes submitted successfully!'
+      }
+      else{
+        this.showSuccessModal = true;
+        this.modalText = 'Error making changes. Review your input';
       }
     }),
     window.ipcRenderer.receive('add-cadet-status', (event, data) => {
@@ -186,7 +192,14 @@ export default {
       if(this.schoolEdit != null){
         changes["school"] = this.schoolEdit;
       }
-      window.ipcRenderer.send("edit-cadet-profile", {newValues: {changes}, id: this.cadetId});
+      if(Object.keys(changes).length != 0){
+        window.ipcRenderer.send("edit-cadet-profile", {newValues: {changes}, id: this.cadetId});
+      }
+      else{
+        this.showSuccessModal = true;
+        this.modalText = 'No changes to submit.';
+      }
+      
     },
     submitSingleCadet(data){
       window.ipcRenderer.send("add-cadet", data);
