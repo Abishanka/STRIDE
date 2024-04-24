@@ -102,7 +102,7 @@ export default {
     let overallAssessmentChart2 = ref(null);
     let sustainChart2 = ref(null);
     let improveChart2 = ref(null);
-    let curSelection = 1;
+    let curSelection = ref(1);
 
     const showCadetsDropdown = ref(false);
     const uniqueCadets = ref([]);
@@ -136,7 +136,7 @@ export default {
     function submitSchoolSelection() {
       if (selectedSchool.value) {
         // Request new data for the selected school
-        curSelection = 1;
+        curSelection.value = 1;
         window.ipcRenderer.send("get-overall-assessment-by-school", selectedSchool.value);
         window.ipcRenderer.send("get-sustain-by-school", selectedSchool.value);
         window.ipcRenderer.send("get-improve-by-school", selectedSchool.value);
@@ -145,7 +145,7 @@ export default {
     function submitSchoolSelection2() {
       if (selectedSchool2.value) {
         // Request new data for the selected school
-        curSelection = 2;
+        curSelection.value = 2;
         window.ipcRenderer.send("get-overall-assessment-by-school", selectedSchool2.value);
         window.ipcRenderer.send("get-sustain-by-school", selectedSchool2.value);
         window.ipcRenderer.send("get-improve-by-school", selectedSchool2.value);
@@ -189,8 +189,8 @@ export default {
         improveCadetChart.value = createChart('improve-cadet-chart', 'Cadet Improve', improveCadetData);
       });
       window.ipcRenderer.receive('overall-assessment-data', (event, data) => {
-        console.log(curSelection);
-        if(curSelection==1)
+        console.log(curSelection.value);
+        if(curSelection.value==1)
         {
           overallAssessmentData.value = data.map(item => ({ label: item.overall_assessment, value: item.count }));
           if (overallAssessmentChart.value) overallAssessmentChart.value.destroy();
@@ -204,7 +204,7 @@ export default {
         }
       });
       window.ipcRenderer.receive('sustain-data', (event, data) => {
-        if(curSelection==1)
+        if(curSelection.value==1)
         {
           sustainData.value = data.map(item => ({ label: item.sustain, value: item.count }));
           if (sustainChart.value) sustainChart.value.destroy();
@@ -218,7 +218,7 @@ export default {
         }
       });
       window.ipcRenderer.receive('improve-data', (event, data) => {
-        if(curSelection==1)
+        if(curSelection.value==1)
         {
           improveData.value = data.map(item => ({ label: item.improve, value: item.count }));
           if (improveChart.value) improveChart.value.destroy();
