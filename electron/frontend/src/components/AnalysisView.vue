@@ -20,7 +20,7 @@
     </div>
     <div class="content-container">
       <!-- First School Selection Dropdown, Submit Button, and Charts -->
-      <div class="comparison-container d-flex justify-content-between" style="width: 100%;">
+      <div class="comparison-container d-flex justify-content-center" style="width: 100%;">
         <div v-if="showSchoolsDropdown" class="dropdown-submit-container d-flex flex-column align-items-center" style="margin-top: 10px; width: 20vw;">
           <select v-model="selectedSchool" class="styled-dropdown" style="width: 100%; min-width: 250px;">
             <option disabled value="">Please select one</option>
