@@ -3,10 +3,10 @@
     <div class="modal-backdrop" v-if="showSuccessModal" @click="hideSuccessModal">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <button class="close-button" @click="hideSuccessModal">&times;</button>
           <h2>{{modalText}}</h2>
         </div>
         </div>
+        <button class="close-button" @click="hideSuccessModal"></button>
     </div>
     <div class="sidebar container" style="margin-left: 0; margin-right: 0;">
       <div class="d-flex align-items-center">
@@ -31,7 +31,7 @@
         <h1 class="cadet-form-heading">Cadet</h1>
         <div class="form-row search-cadet-row">
           <label for="search-cadet" class="form-label">Search Cadet Name</label>
-          <input type="text" id="search-cadet" v-model="searchText" @input="handleSearchChange(searchText)" placeholder=" ">
+          <input type="text" class="search-input search-cadet" v-model="searchText" @input="handleSearchChange(searchText)" placeholder=" ">
           <select size="5" class="search-cadet-dropdown" v-if="searchDropdownVisible" @change="handleSearchSelection($event.target.value)">
               <option v-for="(option, index) in searchOptions" v-bind:value="index" v-bind:key="option">{{ option }}</option>
           </select>
@@ -183,7 +183,7 @@ export default {
       console.log(data);
       if(data == "success"){
         this.showSuccessModal = true;
-        this.modalText = 'Blue card submitted successfully!'
+        this.modalText = '✅ Blue card submitted successfully!'
       }
       else{
         this.showSuccessModal = true;
@@ -194,8 +194,12 @@ export default {
       this.allBluecardInfo = data;
              console.log(data)
       this.exportBluecards();
-    })
+    }),
+    document.addEventListener('click', this.handleDocumentClick);
   }, 
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleDocumentClick);
+  },
   methods: {
     sidebarOptionClick(option) {
       switch (option) {
@@ -227,6 +231,14 @@ export default {
         this.lastName = this.availableCadets[selection].last_name;
         this.school = this.availableCadets[selection].school;
      },
+      handleDocumentClick(e) {
+        const searchInput = document.querySelector('.search-input');
+        const searchDropdown = document.querySelector('.search-cadet-dropdown');
+
+        if (searchInput && !searchInput.contains(e.target) && searchDropdown && !searchDropdown.contains(e.target)) {
+          this.searchDropdownVisible = false;
+        }
+      },
      createBlueCard(){
         let blueCardInfo =
         {
@@ -410,11 +422,12 @@ import '../assets/styles/Sidebar.css';
     width: 100%;
     position: absolute;
     overflow-y: auto;
-    max-height: 15vh;
+    height: 15vh;
     top: 100%;
     background-color: #1E1E1E;
     color: white;
     font-family: sans-serif;
+    padding: 1vh;
   }
 
   .search-cadet-dropdown::selection {
@@ -495,18 +508,29 @@ import '../assets/styles/Sidebar.css';
 }
 
 .modal-content {
-  background-color: #1E1E1E; /* Match the dark theme background */
-  color: #BBE0E3; /* Use the light teal for text */
+  background-color: #ffffff; /* Match the dark theme background */
   padding: 20px;
   border-radius: 5px;
-  width: 70%; /* Make modal wider */
-  max-height: 80%;
+  width: 30%; /* Make modal wider */
+  max-height: 50%;
   overflow-y: auto;
-  border: 1px solid #BBE0E3; /* Border color matched with the form styling */
+  margin-left: 20vw;
 }
 
-.modal-header, .close-button {
-  color: #BBE0E3;
+.modal-header {
+  color: #6EA171; /* Use the light teal for text */
+  text-align: center;
+}
+
+.close-button {
+  background-color: transparent; /* Makes the background color transparent */
+  border: none; /* Removes the border */
+  color: transparent; /* Makes the text color transparent */
+  outline: none; /* Removes the outline on focus */
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+
 }
 </style>
   
