@@ -86,7 +86,7 @@ export default {
   name: 'AnalysisView',
   setup() {
     const router = useRouter();
-    const showSchoolsDropdown = ref(false);
+    const showSchoolsDropdown = ref(true);
     const uniqueSchools = ref([]);
     const selectedSchool = ref('');
     const selectedSchool2 = ref('');
@@ -104,7 +104,7 @@ export default {
     let improveChart2 = ref(null);
     let curSelection = ref(1);
 
-    const showCadetsDropdown = ref(false);
+    const showCadetsDropdown = ref(true);
     const uniqueCadets = ref([]);
     const selectedCadet = ref('');
     
@@ -118,20 +118,15 @@ export default {
     let improveCadetChart = ref(null);
     let sustainCadetChart = ref(null);
 
+    window.ipcRenderer.send("get-unique-schools");
+    window.ipcRenderer.send("get-unique-cadets");
+
+
     function goHome() {
       router.push('/');
     }
     function handleOptionClick(option) {
-      console.log(option);
-      if (option === 'Blue Card') {
-        window.ipcRenderer.send("get-unique-schools");
-        showSchoolsDropdown.value = !showSchoolsDropdown.value; // Toggle visibility
-      } else if (option === 'Cadet Profile') {
-        window.ipcRenderer.send("get-unique-cadets");
-        showCadetsDropdown.value = !showCadetsDropdown.value; // Toggle visibility
-      } else {
-        console.log(option + ' clicked');
-      }
+      console.log(option + " click");
     }
     function submitSchoolSelection() {
       if (selectedSchool.value) {
@@ -169,8 +164,6 @@ export default {
         uniqueCadets.value = cadets.map(cadet => [cadet.uid, cadet.last_name, cadet.first_name]);
       });
       window.ipcRenderer.receive('overall-assessment-cadet-data', (event, data) => {
-        console.log("WE READ YOU LOUD AND CLEAR");
-        console.log(data);
         overallAssessmentCadetData = data.map(item => ({ label: item.overall_assessment, value: item.count }));
         console.log(overallAssessmentCadetChart);
         if (overallAssessmentCadetChart.value) overallAssessmentCadetChart.value.destroy();
@@ -279,7 +272,7 @@ export default {
       submitSchoolSelection,
       submitSchoolSelection2,
       viewCadetProfile,
-      sidebarOptions: ['Blue Card', 'Cadet Profile', 'Export'],
+      sidebarOptions: ['Export'],
       showSchoolsDropdown,
       showCadetsDropdown,
       uniqueSchools,
