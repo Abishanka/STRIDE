@@ -3,7 +3,6 @@
     <div class="modal-backdrop" v-if="modalVisible" @click="modalVisible = false">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <button class="close-button" @click="modalVisible = false">&times;</button>
           <h2>Waterfall Schedule</h2>
         </div>
         <div class="modal-body">

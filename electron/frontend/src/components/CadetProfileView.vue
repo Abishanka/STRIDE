@@ -36,19 +36,20 @@
         <div v-if="cadetMenu_option === cadetMenuOptions[0]" class="cadet-form">
           <div class="cadet-form">
             <div class="import-cadets-parent">
-              <button class="import-cadets" @click="importCadets">Upload Cadet CSV</button>      
+              <button class="import-cadets" @click="importCadets">Upload Cadet CSV</button>  
+              <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none;">    
             </div>
           </div>
         </div>
         <div v-if="cadetMenu_option === cadetMenuOptions[1]" class="cadet-form">
         </div>
-        <div v-if="cadetMenu_option === cadetMenuOptions[2]" class="cadet-form">
+        <div v-if="cadetMenu_option === cadetMenuOptions[1]" class="cadet-form">
           <h1 class="cadet-form-heading">Cadet</h1>
-          <div class="form-row">
+          <div class="form-row search-cadet-row">
             <label for="search-cadet" class="form-label">Search Cadet Name</label>
-            <input type="text" id="search-cadet" v-model="searchText" @input="handleInputChange(searchText)" placeholder=" ">
-            <select id="search-cadet-dropdown" size="5" class="dropdown" v-if="dropdownVisible" @change="handleSearchSelection($event.target.value)">
-              <option v-for="(option, index) in searchOptions" v-bind:value="index" v-bind:key="option">{{ option }}</option>
+            <input type="text" class="search-input search-cadet" v-model="searchText" @input="handleSearchChange(searchText)" placeholder=" ">
+            <select size="5" class="search-cadet-dropdown" v-if="searchDropdownVisible" @change="handleSearchSelection($event.target.value)">
+                <option v-for="(option, index) in searchOptions" v-bind:value="index" v-bind:key="option">{{ option }}</option>
             </select>
           </div>
           <div class="form-row">
@@ -101,7 +102,7 @@ export default {
           return [];
         }
       }),
-      cadetMenuOptions: ['Import Cadets', 'Add New Cadet', 'Edit Cadet Details'],
+      cadetMenuOptions: ['Import Cadets', 'Edit Cadet Details'],
     }
   }, data () {
     return {
@@ -117,7 +118,8 @@ export default {
       lastNameEdit: null,
       schoolEdit: null,
       showSuccessModal: false,
-      modalText: 'Changes submitted successfully!'
+      modalText: 'Changes submitted successfully!',
+      searchDropdownVisible: false
     }
   },
    mounted() {
@@ -140,8 +142,54 @@ export default {
     window.ipcRenderer.receive('add-cadet-status', (event, data) => {
       //if successful data will be: "success". If there's an error data: err.message
       console.log(data);
-    })},
+    }),
+    document.addEventListener('click', this.handleDocumentClick);
+  
+  },
+    beforeUnmount() {
+    document.removeEventListener('click', this.handleDocumentClick);
+    },
   methods: {
+    importCadets() {
+      this.$refs.fileInput.click();
+    },
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) {
+        return;
+      }
+      window.ipcRenderer.send("upload-cadet-profiles", this.parseuploadedfile(file));
+    },
+    parseuploadedfile(file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const csv = event.target.result;
+        const lines = csv.split('\n');
+        const result = [];
+        const headers = lines[0].split(',');
+
+        for (let i = 1; i < lines.length; i++) {
+          const obj = {};
+          const currentline = lines[i].split(',');
+
+          if (currentline.length === headers.length) { // Make sure each line has the correct number of columns
+            for (let j = 0; j < headers.length; j++) {
+              obj[headers[j].trim()] = currentline[j].trim();
+            }
+            result.push(obj);
+          }
+        }
+
+        console.log(result); // Output the parsed JSON
+        return result;
+      };
+
+      reader.onerror = function(error) {
+        console.error('Error reading file:', error);
+      };
+
+      reader.readAsText(file);
+    },
     sidebarOptionClick(option) {
       switch (option) {
         case 'Blue Card':
@@ -180,6 +228,18 @@ export default {
         this.lastName = this.availableCadets[selection].last_name;
         this.school = this.availableCadets[selection].school;
      },
+     handleSearchChange(text) {
+        window.ipcRenderer.send("get-matching-cadets", text);
+        this.searchDropdownVisible = true;
+     },
+     handleDocumentClick(e) {
+        const searchInput = document.querySelector('.search-input');
+        const searchDropdown = document.querySelector('.search-cadet-dropdown');
+
+        if (searchInput && !searchInput.contains(e.target) && searchDropdown && !searchDropdown.contains(e.target)) {
+          this.searchDropdownVisible = false;
+        }
+      },
     submitChanges(){
       //collect fields/values to change and send
       let changes = {};
@@ -378,4 +438,32 @@ import '../assets/styles/Sidebar.css';
 .modal-header, .close-button {
   color: #BBE0E3;
 }
+
+.search-cadet-row {
+    position: relative;
+  }
+
+  .search-cadet-dropdown {
+    width: 100%;
+    position: absolute;
+    overflow-y: auto;
+    height: 15vh;
+    top: 100%;
+    background-color: #1E1E1E;
+    color: white;
+    font-family: sans-serif;
+    padding: 1vh;
+  }
+
+  .search-cadet-dropdown::selection {
+    background-color: #6EA171;
+  }
+
+  .search-cadet-dropdown:focus {
+    outline: none;
+  }
+
+  .search-cadet-dropdown:out-of-range {
+    display: hidden;
+  }
 </style>
