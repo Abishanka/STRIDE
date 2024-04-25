@@ -407,11 +407,10 @@ function getImproveBySchool(event, school) {
   });
 }
 
-/////////////////////////////////////////////////////////////////////////// For Cadet
-
 function getUniqueCadets(event) {
   // SELECT DISTINCT school FROM CadetProfile
-  const sql = "SELECT DISTINCT uid, first_name, last_name FROM CadetProfile ORDER BY last_name";
+  const sql =
+    "SELECT DISTINCT uid, first_name, last_name FROM CadetProfile ORDER BY last_name";
   db.all(sql, [], (err, rows) => {
     if (err) {
       console.error("Error fetching unique schools:", err.message);
@@ -496,7 +495,17 @@ function getImproveByCadet(event, cadetId) {
   });
 }
 
-/////////////////////////////////////////////////////////////////////////// For Cadet
+function allBluecards(event) {
+  const sql =
+    "SELECT * FROM BlueCards LEFT JOIN CadetProfile on BlueCards.cid = CadetProfile.uid ORDER BY school";
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      console.error("Error:", err.message);
+    } else {
+      event.sender.send("all-bluecards", rows);
+    }
+  });
+}
 
 app.whenReady().then(createWindow);
 
@@ -593,6 +602,6 @@ ipcMain.on("add-cadet", (event, args) => {
   addCadet(args);
 });
 
-ipcMain.on("get-analysis-results", (event, args) => {
-  //analysis logic
+ipcMain.on("export-bluecards", (event, args) => {
+  allBluecards(event);
 });
