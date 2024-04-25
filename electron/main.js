@@ -497,7 +497,7 @@ function getImproveByCadet(event, cadetId) {
 
 function allBluecards(event) {
   const sql =
-    "SELECT * FROM BlueCards LEFT JOIN CadetProfile on BlueCards.cid = CadetProfile.uid ORDER BY school";
+    "SELECT * FROM BlueCards JOIN CadetProfile on BlueCards.uid = CadetProfile.uid ORDER BY school";
   db.all(sql, [], (err, rows) => {
     if (err) {
       console.error("Error:", err.message);
