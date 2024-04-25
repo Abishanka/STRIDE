@@ -272,6 +272,7 @@ function insertBlueCard(event, blueCardData) {
 }
 
 function insertCadetProfiles(event, cadetDataList) {
+  console.log(cadetDataList);
   const placeholders = cadetDataList.map(() => "(?, ?, ?)").join(", ");
   const values = cadetDataList.flatMap((cadet) => Object.values(cadet));
 
@@ -583,6 +584,7 @@ ipcMain.on("upload-blue-card", (event, args) => {
 });
 
 ipcMain.on("upload-cadet-profiles", (event, args) => {
+  console.log(args);
   cadetData = args; //update as needed
   insertCadetProfiles(event, cadetData);
 });

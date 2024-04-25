@@ -119,7 +119,8 @@ export default {
       schoolEdit: null,
       showSuccessModal: false,
       modalText: 'Changes submitted successfully!',
-      searchDropdownVisible: false
+      searchDropdownVisible: false,
+
     }
   },
    mounted() {
@@ -153,42 +154,46 @@ export default {
     importCadets() {
       this.$refs.fileInput.click();
     },
-    handleFileUpload(event) {
+    async handleFileUpload(event) {
       const file = event.target.files[0];
       if (!file) {
         return;
       }
-      window.ipcRenderer.send("upload-cadet-profiles", this.parseuploadedfile(file));
+      let cadetData = await this.parseuploadedfile(file);
+      console.log(cadetData);
+      window.ipcRenderer.send("upload-cadet-profiles", cadetData);
     },
     parseuploadedfile(file) {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const csv = event.target.result;
-        const lines = csv.split('\n');
-        const result = [];
-        const headers = lines[0].split(',');
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
 
-        for (let i = 1; i < lines.length; i++) {
-          const obj = {};
-          const currentline = lines[i].split(',');
+        reader.onload = function(event) {
+          const csv = event.target.result;
+          const lines = csv.split('\n');
+          const result = [];
+          const headers = lines[0].split(',');
 
-          if (currentline.length === headers.length) { // Make sure each line has the correct number of columns
-            for (let j = 0; j < headers.length; j++) {
-              obj[headers[j].trim()] = currentline[j].trim();
+          for (let i = 1; i < lines.length; i++) {
+            const obj = {};
+            const currentline = lines[i].split(',');
+
+            if (currentline.length === headers.length) { // Make sure each line has the correct number of columns
+              for (let j = 0; j < headers.length; j++) {
+                obj[headers[j].trim()] = currentline[j].trim();
+              }
+              result.push(obj);
             }
-            result.push(obj);
           }
-        }
 
-        console.log(result); // Output the parsed JSON
-        return result;
-      };
+          resolve(result); // Resolve the promise with the result
+        };
 
-      reader.onerror = function(error) {
-        console.error('Error reading file:', error);
-      };
+        reader.onerror = function(error) {
+          reject(error); // Reject the promise if there is an error
+        };
 
-      reader.readAsText(file);
+        reader.readAsText(file);
+      });
     },
     sidebarOptionClick(option) {
       switch (option) {
