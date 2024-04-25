@@ -192,6 +192,7 @@ export default {
     }),
     window.ipcRenderer.receive('all-bluecards', (event, data) => {
       this.allBluecardInfo = data;
+             console.log(data)
       this.exportBluecards();
     }),
     document.addEventListener('click', this.handleDocumentClick);
@@ -288,7 +289,7 @@ export default {
       this.showSuccessModal = false;
     },
     exportBluecards(){
-     const reversedHeader = Object.keys(this.allBluecardInfo[0]).slice(2).reverse();
+      const reversedHeader = Object.keys(this.allBluecardInfo[0]).slice(2).reverse();
       const reversedRows = this.allBluecardInfo.slice().reverse(); // Make a copy of the array and reverse it
 
       const headerString = reversedHeader.join(',');

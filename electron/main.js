@@ -216,7 +216,7 @@ function getWaterfallData(
   Promise.all([getCadetData])
     .then(([cadetRows]) => {
       cadets = cadetRows;
-      //console.log("Waterfall Data:", cadets);
+
       generateWaterfallData(
         event,
         ftx_length,
@@ -260,7 +260,6 @@ function insertBlueCard(event, blueCardData) {
   const values = Object.values(blueCardData);
 
   const sql = `INSERT INTO BlueCards (${columns}) VALUES (${placeholders})`;
-  console.log(sql);
   db.run(sql, values, function (err) {
     if (err) {
       event.sender.send("submission-status", err.message);
@@ -428,7 +427,6 @@ function getOverallAssessmentByCadet(event, cadetId) {
     (SELECT overall_assessment FROM BlueCards WHERE uid = ?) 
     GROUP BY overall_assessment
   `;
-  console.log("WE READ " + cadetId);
 
   db.all(sql, [cadetId], (err, rows) => {
     if (err) {
@@ -497,7 +495,7 @@ function getImproveByCadet(event, cadetId) {
 
 function allBluecards(event) {
   const sql =
-    "SELECT * FROM BlueCards LEFT JOIN CadetProfile on BlueCards.cid = CadetProfile.uid ORDER BY school";
+    "SELECT * FROM BlueCards JOIN CadetProfile on BlueCards.uid = CadetProfile.uid ORDER BY school";
   db.all(sql, [], (err, rows) => {
     if (err) {
       console.error("Error:", err.message);
@@ -551,12 +549,10 @@ ipcMain.on("get-overall-assessment-by-school", (event, args) => {
 });
 
 ipcMain.on("get-sustain-by-school", (event, args) => {
-  console.log(args);
   getSustainBySchool(event, args);
 });
 
 ipcMain.on("get-improve-by-school", (event, args) => {
-  console.log(args);
   getImproveBySchool(event, args);
 });
 
@@ -569,12 +565,10 @@ ipcMain.on("get-overall-assessment-by-cadet", (event, args) => {
 });
 
 ipcMain.on("get-sustain-by-cadet", (event, args) => {
-  console.log(args);
   getSustainByCadet(event, args);
 });
 
 ipcMain.on("get-improve-by-cadet", (event, args) => {
-  console.log(args);
   getImproveByCadet(event, args);
 });
 
@@ -585,7 +579,6 @@ ipcMain.on("edit-cadet-profile", (event, args) => {
 });
 
 ipcMain.on("upload-blue-card", (event, args) => {
-  console.log(args);
   insertBlueCard(event, args);
 });
 
