@@ -22,7 +22,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="cadet in selectedDayContent" :key="cadet.uid">
+                <tr v-for="cadet in selectedDayContent" :key="`${cadet.uid}-${selectedDay}`">
                   <td>{{ cadet.school }}</td>
                   <td>{{ cadet.first_name }} {{ cadet.last_name }}</td>
                   <td>{{ cadet.position }}</td>
@@ -112,18 +112,6 @@ export default {
     const days = ref([]);
     const organizedData = ref({}); // To store organized data by day
     const selectedDayContent = ref([]);
-
-    watch(selectedDay, (newValue) => {
-      selectedDayContent.value = [];
-      
-      // Adjusting for 0-based indexing internally while displaying 1-based to the user
-      const adjustedValue = newValue - 1;
-      if (organizedData.value && organizedData.value[adjustedValue]) {
-        selectedDayContent.value = [...organizedData.value[adjustedValue]]; // Use spread to avoid direct reference
-      } else {
-        selectedDayContent.value = [];
-      }
-    });
 
     function goHome() {
       router.push('/');
@@ -232,8 +220,6 @@ export default {
       document.body.removeChild(link);
     }
 
-    // Populate based on generated data
-    // For demo, assuming `data` is fetched or passed to the component
     function parseDataForModal(data) {
       // Populate `organizedData` based on the input data
       const tempOrganizedData = {};
@@ -248,15 +234,12 @@ export default {
       days.value = Object.keys(tempOrganizedData).map(Number).sort((a, b) => a - b);
       updateSelectedDayContent();
     }
-    // Watcher to update content based on the selected day
-    watch(selectedDay, () => {
-      updateSelectedDayContent();
-    });
-
+  
     function updateSelectedDayContent() {
-      selectedDayContent.value = organizedData.value[selectedDay.value] || [];
-      selectedDayContent.value.sort((a, b) => a.mission - b.mission);
+      const newContent = organizedData.value[selectedDay.value] || [];
+      selectedDayContent.value = [...newContent.sort((a, b) => a.mission - b.mission)];
     }
+
 
     function findCadetInfo(uid, platoons) {
       for (const platoon of platoons) {
@@ -320,21 +303,6 @@ export default {
         window.ipcRenderer.send("get-waterfall-data", this.waterfallCriteria);
         this.modalVisible = true; // Show modal after data is prepared
       }
-    },
-    prepareModalData(data) {
-      // This method would organize the data into a structure that can be easily iterated over in the template.
-      // For simplicity in explanation, focus on preparing data for a single selected day at first.
-      const organizedData = {};
-      data.leadership.forEach(lead => {
-        if (!organizedData[lead.day]) organizedData[lead.day] = [];
-        const cadetInfo = this.findCadetInfo(lead.cadet, data.platoons);
-        if (cadetInfo) {
-          organizedData[lead.day].push({ ...cadetInfo, position: lead.position, mission: lead.mission });
-        }
-      });
-      // Example: Populate days and selectedDayContent based on organizedData
-      this.days = Object.keys(organizedData);
-      this.selectedDayContent = organizedData[this.selectedDay];
     },
     findCadetInfo(uid, platoons) {
       // Find and return cadet info by uid
