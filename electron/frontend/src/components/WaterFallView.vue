@@ -239,9 +239,15 @@ export default {
       updateSelectedDayContent();
     }
   
+    watch(selectedDay, () => {
+      updateSelectedDayContent();
+    });
+    
     function updateSelectedDayContent() {
       const newContent = organizedData.value[selectedDay.value] || [];
+      console.log(newContent);
       selectedDayContent.value = [...newContent.sort((a, b) => a.mission - b.mission)];
+      console.log(selectedDayContent.value)
     }
 
 
