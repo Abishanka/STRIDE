@@ -81,11 +81,15 @@
           </div>
           <button class="generate-button" @click="generateWaterfall">Generate Waterfall</button>
           <p class="update-warning">⚠️ Update cadet profiles before generating waterfall</p>
+          <br>
+          OR
+          <br>
+          <button class="generate-button" @click="generateWaterfall">Upload Waterfall</button>
         </div>
       </div>
       <div class="output-container">
         <button v-if="tableData.length > 0" class="output-model-button" @click="modalVisible = true">Reopen Schedule Modal</button>
-        <p v-else>Awaiting input parameters...</p>
+        <p v-else>Awaiting waterfall generation...</p>
       </div>
     </div>
   </div>
